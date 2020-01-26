@@ -19,7 +19,7 @@ Unlike other apps which might lock the data up so that it is only useful for the
 
  The raw data files used for the app can be very useful for further processing.   For example:
 
-- I wrote a program in R that will take the match scores and use it for visualisation of progressive score (like a 'worm' graph).
+- I wrote a [program in R](worm2(2018).r) that will take the match scores and use it for visualisation of progressive score (like a 'worm' graph).
 - I wrote another program in R that will compile all of the player statistics from the year's results.
 
  The latest version of the app contains a player database with player numbers, which makes it easier to cross-reference the individual player statistics for these full-season purposes.
