@@ -2,7 +2,7 @@
 
 Database:
 -----------------
-Team and Player selections are stored by season
+Team and Player selections are stored by season.
 Stores first and second names of players
 
 Fixtures editing:
@@ -24,10 +24,10 @@ Scoring:
 --------
 Scoring interface shows each innings separately.
 Each over displays current score to end of over, regardless of cell selected.
-Bowler is selected on first ball of over
+Bowler is selected on first ball of over.
 Bowler's statistics displayed for current over.
 
-Batter statistics and warning appear near batter selectors
+Batter statistics and warning appear near batter selectors.
 Batter on strike automatically changes to last remaining batter if other batter finished.
 
 For matches with more than 6 ball maximum, navigation shifts window to right as needed.
