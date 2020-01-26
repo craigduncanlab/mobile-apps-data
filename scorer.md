@@ -8,6 +8,10 @@ Especially suitable for scoring U10 to U13 (easy for parents to keep up with rap
 
 Email scores and results to team when you finish.
 
+# Latest updates
+
+[Version3 updates](versions.md)
+
 # Features 
 
 Database with Players, Teams, Games by season.
