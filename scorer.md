@@ -32,4 +32,4 @@ Comprehensive match statistics during game at any time (bowlers, batters, progre
 
 # Where to get it
 
-[The app page at the iTunes store](https://itunes.apple.com/us/app/junior-cricket-scorer/id1437125243?ls=1&mt=8)
+Available on the [iTunes Store](https://apps.apple.com/us/app/match-mate/id1437125243?ls=1)
