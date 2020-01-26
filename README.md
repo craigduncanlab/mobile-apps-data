@@ -22,3 +22,8 @@ This repository contains further information about the app and its open data.  F
 The app is written in Objective-C.  
 
 For my own education, I thought it best to learn the 'C' way first, and consider Swift or cross-platform approaches later.  It has taught me a lot about the history of NextStep and the early decisions of Steve Jobs that live on in Apple today.
+
+# Where to get it
+
+Available on the [iTunes Store](https://apps.apple.com/us/app/match-mate/id1437125243?ls=1)
+
