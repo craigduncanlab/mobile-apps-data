@@ -29,8 +29,10 @@ You may use and modify the source code and any derived software or program on th
 
 4. Neither the name, identity, content of the software, nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-5. References to the Repository, the copyright holder and the general purpose of this software permitted for training or educational purposes.
+5. References to the Repository, the copyright holder and the general purpose of this software are permitted for training or educational purposes.
 
 6. This software is provided by the copyright holder(s) and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the copyright owner or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
+
+7.  If the software is removed from the Repository, these terms continue to apply to any copy of the software, or any part of it, from the time it was copied from the Repository or otherwise accessed by any person.
 
 Last updated 26 January 2020.
