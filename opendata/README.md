@@ -22,11 +22,11 @@ Unlike other apps which might lock the data up so that it is only useful for the
 - I wrote a [program in R](worm2(2018).r) that will take the match scores and use it for visualisation of progressive score (like a 'worm' graph).
 - I wrote another program in R that will compile all of the player statistics from the year's results.
 
- The latest version of the app contains a player database with player numbers, which makes it easier to cross-reference the individual player statistics for these full-season purposes.
+The latest version of the app contains a player database with player numbers, which makes it easier to cross-reference the individual player statistics for these full-season purposes.
 
- By keeping the data open, it enables anyone who uses the app to write further programs in R or another data langauge (e.g. python) to visualise the data, or make it more useful.  
+By keeping the data open, it enables anyone who uses the app to write further programs in R or another data langauge (e.g. python) to visualise the data, or make it more useful.  
  
- By sharing these data-processing programs, we can contribute to the diveristy of ways to use the data for themselves or their clubs.
+By sharing these data-processing programs, we can increase the number of ways parents, players pr clubs can use the data.
  
 ## Post-game data - animation app
 
