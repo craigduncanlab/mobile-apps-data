@@ -26,7 +26,7 @@ The latest version of the app contains a player database with player numbers, wh
 
 By keeping the data open, it enables anyone who uses the app to write further programs in R or another data langauge (e.g. python) to visualise the data, or make it more useful.  
  
-By sharing these data-processing programs, we can increase the number of ways parents, players pr clubs can use the data.
+By sharing these data-processing programs, we can increase the number of ways parents, players or clubs can use the data.
  
 ## Post-game data - animation app
 
