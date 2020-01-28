@@ -1,4 +1,15 @@
 # Version 3.0 updates
+26.1.2020
+
+The Junior Cricket scorer app has gone through some nice improvements since October, and is now called "Match Mate".
+
+The app will handle season by season database of players, fixtures and games.
+
+It can be configured for match setups for U10 upwards, including U11, U13 and adult T20 configurations.
+
+The main change to the interface is that each team's innings (Home or Away) is selected so you can access them for scoring separately.  Some other minor improvements to the location of the data on the scoring touch-pad has been included.
+
+If you want to update your previous copy, you can do so with an update from your App or App Store links, or contact me directly with any queries or feedback.  In any case, the new version creates a new database folder and does not directly interfere with the previous data. 
 
 Database:
 -----------------
