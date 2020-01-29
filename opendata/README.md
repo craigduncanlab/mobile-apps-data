@@ -1,7 +1,7 @@
 # Cricket Data and Open Data Pipeline
 for Match Mate, Cricket Scorer App
 (c) Craig Duncan 2020.   
-Download and use of the software referred to here is under the terms of my OpenDataLicence.
+Download and use of the software referred to here is under the terms of my [RepositoryLicence](../RepositoryLicense.md).
 
 ## Match Mate provides match data
 
