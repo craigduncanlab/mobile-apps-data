@@ -2,11 +2,11 @@
 
 This repo contains data related to my mobile apps.
 
-My first app is Match Mate (previously called Junior Cricket scorer), which is now a versatile multi-format scorer.  
+My first app is Junior Cricket Scorer, which is now a versatile multi-format scorer.  
 
-It is presently available only for iOS devices.  In time, I would like to make this for other OS.
+It is presently available only for iOS devices.  
 
-## Match Mate 
+## Junior Cricket Scorer 
 
 The app was written with these things in mind:
 
