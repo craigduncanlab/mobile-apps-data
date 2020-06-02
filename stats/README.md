@@ -1,11 +1,11 @@
 # Cricket Data and Open Data Pipeline
-for Match Mate, Cricket Scorer App
+for Junior Cricket Scorer App
 (c) Craig Duncan 2020.   
 Download and use of the software referred to here is under the terms of my [RepositoryLicence](../RepositoryLicense.md).
 
-## Match Mate provides match data
+## Junior Cricket Scorer provides match data
 
-The Match Mate app has been designed so that you can email match data to yourself or your team.
+The Junior Cricket Scorer app has been designed so that you can email match data to yourself or your team.
 
 Unlike other apps which might lock the data up so that it is only useful for the app, the app sends you:
 
