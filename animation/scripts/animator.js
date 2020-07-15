@@ -1,10 +1,14 @@
-/* 
-2019 update of 'matchresults.js'
-14 August 2019-18 August 2019
+/* Junior Cricket Scorer Animator
+(c) Craig Duncan 2019-2020
 
+Use with loadgame.html
+//TO DO: modify so that it works with size of input data array (not merely with 240 ball games)
 */
 
-var numballs = 0;
+// ALL VARIABLES DECLARED HERE (OUTSIDE FUNCTIONS) ARE GLOBAL
+// TO DO: CONFINE AS MANY TO LOCAL FUNCTIONS AS POSSIBLE
+  
+  var numballs = 0;
   var elem = document.getElementById("txt");
   //var value = parseInt(elem.innerHTML, 10);
   var value=0;
@@ -19,7 +23,11 @@ var numballs = 0;
   var matchdate=" ";
   //var Innings1 = new Innings();
   //var Innings2 = new Innings();
-  //var maxballs = 120;
+  var matchscore=0;
+  var matchwickets=0;
+  var maxballs = 120; //TO DO - read in data array to make sure it is >= 120 balls
+  var matchscoretext = [maxballs+1]; //set up an array with matchscore text for every ball, but start at 1
+  var ballscoretext = [maxballs+1];
   var ballcount=0;
   //on-screen display
   var commentarytext="default";
@@ -34,7 +42,8 @@ var numballs = 0;
   var helmet_sprite = [];
   var canvas, ctx,
     canv_width = 600,
-    canv_height = 170,
+    canv_base=170,
+    canv_height = canv_base+30, //Was 170.  make this 230 to allow for match score
     rightKey = false,
     leftKey = false,
     upKey = false,
@@ -45,7 +54,7 @@ var numballs = 0;
      sprite_y=[]
      batter_sprite_x=[]
      batter_sprite_x[1] = crease1, batter_sprite_x[2]=crease2,
-     sprite_y[1] = canv_height - 108, sprite_y[2] = canv_height - 108,sprite_w = 65, sprite_h = 85,
+     sprite_y[1] = canv_base - 108, sprite_y[2] = canv_base - 108,sprite_w = 65, sprite_h = 85,
      bwl_srcX=0,
      bwl_srcY=0,
      bwl_sprite_x=canv_width*0.9; //make this 90% of width
@@ -137,6 +146,8 @@ mainLoader();
   }
 
   //function to add arguments to string for cumulative match commentary
+  //i.e. generate text for updating HTML elements
+  //not currently used
   function updateDisplay(value,text,innings) {
     //matchball display: elem.innerHTML = value;
     /*
@@ -160,16 +171,10 @@ mainLoader();
   }
 
 
-//function to execute animation sequence
+//function to execute before animation sequence starts
+//remainder of function calls are generated on basis of interval timers
 function animationLoop() {
-    //startcanvas();
-    //var matchball=1; 
-    //var maxballs;
-   
-    setupFirstBall();
-    //if (restartcheck==1) {
-
-    //}
+    //setupFirstBall();
 }
 
 function cleanUpGame() {
@@ -186,21 +191,13 @@ function cleanUpGame() {
 function doDrawing() {
       if(inningscount<3) {
         //doLaps();
-        //displayTextLoop();  //DISABLED 
         clearCanvas();
-        //keymessage updates here (20ms)
-        var wrt=" ";
-        if (wicketresult>0) {
-          wrt=" (out)";
-        }
-        innball=canv_ballcount+1;
-              
-        balldescription="Match ball: ("+innball+"/240) This ball result:"+currentruns+" runs "+" wides: "+wideruns+" nb: "+noballruns+" b: "+byeruns+" lb: "+legbyeruns+wrt+"  ";
+        // Match score text is drawn on the canvas, as it updates
         drawSprite();
         }
 }
 
-  //javascript just accepts any number, type of argumentW!
+  //A function to produce text that can be displayed in HTML tags (rather than canvas)
   function textoutput(ballnum){
     //make ids global now
     //numballs = ids.length;  //this should equal array size
@@ -217,11 +214,64 @@ function setupFirstBall() {
      setBallResult();
      setBatterHelmet(1);
      setBatterHelmet(2); 
+     setMatchScoreText();
      resetMainStates();
   }
 
+//setup the array with the matchscores text
+function setMatchScoreText() {
+  matchscoretext[0]="0/0"; //start of game
+  //loop through each ball, get result and create a matchscore for that ball
+  //put the score into the next ball of the array, so it only shows after the animation has finished.
+  for (i = 0; i < maxballs; i++) { 
+    s=0;
+    w=0;
+    s=getScoreResult(i);
+    w=getWicketResult(i);
+    matchscore=matchscore+s;
+    matchwickets=matchwickets+w;
+    //
+    matchscoretext[i+1]=matchwickets+"/"+matchscore;
+  }
+}
+
+//return the total runs result for this ball in index
+function getScoreResult(ballindex) {
+    currentruns=thisBall[ballindex][3];
+    wicketresult=thisBall[ballindex][4];
+    wideruns=thisBall[ballindex][5];
+    byeruns=thisBall[ballindex][6];
+    legbyeruns=thisBall[ballindex][7];
+    noballruns=thisBall[ballindex][8];
+    wr=0;
+    nbr=0;
+    if (noballruns>1) {
+      nbr=noballruns-1;
+    }
+    if (wideruns>1) {
+        wr=wideruns-1;
+    }
+    var wrt=" ";
+        if (wicketresult>0) {
+          wrt=" (out)";
+        }
+    ballruns=0;
+    ballruns=parseInt(currentruns)+parseInt(byeruns)+parseInt(legbyeruns)+wr+nbr;
+    innball=ballindex+1;
+    //while we are here, update ballscore text for display
+    ballscoretext[ballindex]="("+innball+"/"+maxballs+") This ball result:"+currentruns+" runs "+" wides: "+wideruns+" nb: "+noballruns+" b: "+byeruns+" lb: "+legbyeruns+wrt+"  ";
+    return Number(ballruns);
+}
+
+//return the wicket result for this ball in index
+function getWicketResult(ballindex) {
+    wk=0;
+    wk=thisBall[ballindex][4];
+    return Number(wk);
+}
+
+//return the data from the 'canv_ballcount' of the 2D array
 function setBallResult() {
-    
     battername[1]=thisBall[canv_ballcount][0];
     battername[2]=thisBall[canv_ballcount][1];
     bowlername=thisBall[canv_ballcount][2];
@@ -242,6 +292,8 @@ function setBallResult() {
     allruns=0;
     allruns=parseInt(currentruns)+parseInt(byeruns)+parseInt(legbyeruns)+wr+nbr;
     }
+
+  
 
 function startcanvas() {
   canvas = document.getElementById('canvas');
@@ -322,28 +374,27 @@ function resetMainStates() {
 
 
 /*
-function to obtain next ball data.  At moment, innings are handled separately to ensure separate data objects
+function to obtain next ball data.
+Note that this function is called every 1 second.  It first checks to see if the AI needs to be run or not.
+Score match updates must also be conditional on 'scoreupdate flag being set' 
+
+At moment, innings are handled separately to ensure separate data objects
 TO DO: clarify when previous ball is 'dead ball', or goals achieved by all AI agents
 
 */
 function nextBall() {
-  
-    if (batter_goal==="achieved" && bowler_goal==="achieved" && ball_goal==="achieved" && canv_ballcount<239) {
+    
+    //progress to next ball
+    if (batter_goal==="achieved" && bowler_goal==="achieved" && ball_goal==="achieved" && canv_ballcount<maxballs-1) {
       canv_ballcount++;
       scoreupdate=0;
-
-      //update the current runs
+      //update the current result, runs
       setBallResult();
       resetMainStates();
       setBatterHelmet(1);
       setBatterHelmet(2); 
-   
-  }
-  //if innings balls completed
-  if (canv_ballcount>120 && inningscount==1) { //Innings1.getMaxBalls()
-    //canv_ballcount=0;
-    inningscount++;
-  }
+    }
+
   }
   
 //frame sets for Bowler modes
@@ -822,6 +873,7 @@ function doBatterPlayShot() {
         }
         else {
             batter_goal="achieved";
+            //matchscore=matchscore+allruns; //only add runs after batter goal is achieved
         }
       }
 
@@ -1068,7 +1120,7 @@ function drawSprite() {
   //ctx.drawImage(bowler_sprite,bwl_srcX,bwl_srcY,sprite_w,sprite_h,550,bwl_sprite_y,sprite_w,sprite_h);
 
   //PLAYER NAMES TEXT
-  var txt_y=canv_height-5;
+  var txt_y=canv_base-5;
   ctx.fillText(battername[1],10,txt_y);
   ctx.fillText(battername[2],crease2+100,txt_y);
   //
@@ -1090,7 +1142,12 @@ function drawSprite() {
   ctx.fillText(bowlerdata,canv_width-40,txt_y);
 
   // BALL RESULT TEXT
+  //pre-filled
+  balldescription="Match ball: "+ballscoretext[canv_ballcount];
   ctx.fillText(balldescription,crease1+60,txt_y);
+  //use the pre-filled matchscores to fill in the matchdescription for this ball
+  gametext="Match score: "+matchscoretext[canv_ballcount];
+  ctx.fillText(gametext,crease1+60,txt_y+30); //line below
 
 }
 
@@ -1138,7 +1195,7 @@ function keyDown(e) {
     keymessage="key down";
     //canv_ballcount=238; //maxballs-1
     canv_ballcount=canv_ballcount+5; //6 balls = 1 over in juniors
-    if (canv_ballcount>239) {
+    if (canv_ballcount>maxballs-1) {
           canv_ballcount=0;
          }
     cleanUpGame();
@@ -1148,7 +1205,7 @@ function keyDown(e) {
          keymessage="up key";
           canv_ballcount=canv_ballcount-7;
           if (canv_ballcount<-1) {
-            canv_ballcount=239;
+            canv_ballcount=maxballs-1;
           }
           cleanUpGame();
           nextBall();  //advances to next ball
@@ -1156,9 +1213,9 @@ function keyDown(e) {
    else if (e.keyCode == 37) {
          keymessage="left arrow";
          canv_ballcount=canv_ballcount-2; //to allow for next ball increment by 1
-         canv_ballcount=canv_ballcount%240;
+         canv_ballcount=canv_ballcount%maxballs;  //cycles back to start after last ball
          if (canv_ballcount<-1) {
-          canv_ballcount=239;
+          canv_ballcount=maxballs-1;
          }
          cleanUpGame();
          nextBall();      
@@ -1181,9 +1238,9 @@ function keyDown(e) {
 
    else if (e.keyCode == 39) {
          keymessage="right arrow";
-         canv_ballcount=canv_ballcount%240;
-         if (canv_ballcount>239) {
-          canv_ballcount=0;
+         canv_ballcount=canv_ballcount%maxballs;
+         if (canv_ballcount>maxballs-1) {
+          canv_ballcount=0; 
          }
          cleanUpGame();
          nextBall(); //advances ball by one     
@@ -1200,11 +1257,13 @@ function startAnimation() {
   document.addEventListener('keyup', keyUp, false);
   startcanvas();  
   console.log(gameArray[2]); //test we have array 
+  //the nextBall function increments to next ball after set time period (1 second)
   intvl1=setInterval(nextBall, 1000);  // cf requestAnimationFrame() 
   intvl2=setInterval(doBatter, 80); //make this character specific, not event
   intvl3=setInterval(doBowl, 80);
   intvl4=setInterval(doBall, 30); //smaller delay = higher speed/frames possible
   intvl5=setInterval(doDrawing, 20);
-  animationLoop();
+  setupFirstBall();  //called once before any of interval function calls start
+  //animationLoop();
   console.log("Done");
 }

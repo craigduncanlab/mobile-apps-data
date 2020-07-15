@@ -60,19 +60,18 @@ p {
 <label><button type="submit" id="resetButton" disabled="true">Reset</button></label></div>
 <div class="graphic" align="center">
 	<table>
-	<td class="score">
-	<p class="instb">Progressive score</p>
-	<p class="inst">(Coming soon)</p></td>
-<td class="score">
-<canvas id="canvas" width="700" height="170"></canvas></div></td></tr>
-<td class="score"><p class="instb">Keys for control:</p>
+	<td class="score"><p class="instb">Keys for control:</p>
 	<p></p>
 	<p class="inst">Left/right arrow: back/fwd 1 ball</p>
 	<p class="inst">Up/down arrows: back/fwd 6 balls (1 over)</p>
 	<p></p>
 	<p class="inst">"d" = 'duck'</p>
 	<p class="inst">"." = 'bat up'</p>
-	<p class="inst">"," = 'high bat'</p></td></tr></table>
+	<p class="inst">"," = 'high bat'</p></td>
+<td class="score">
+<!-- Canvas base = 170 + space for text is 60 -->
+<canvas id="canvas" width="700" height="230"></canvas></div></td></tr>
+</table>
 </div>
 </table>
 </div>
