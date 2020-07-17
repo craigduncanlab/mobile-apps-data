@@ -6,6 +6,7 @@ Use with loadgame.html
 */
 
 // ALL VARIABLES DECLARED HERE (OUTSIDE FUNCTIONS) ARE GLOBAL
+// This is processed on script loading, so do not rely on run-time variable settings here
 // TO DO: CONFINE AS MANY TO LOCAL FUNCTIONS AS POSSIBLE
   
   var numballs = 0;
@@ -25,9 +26,9 @@ Use with loadgame.html
   //var Innings2 = new Innings();
   var matchscore=0;
   var matchwickets=0;
-  var maxballs = 120; //TO DO - read in data array to make sure it is >= 120 balls
-  var matchscoretext = [maxballs+1]; //set up an array with matchscore text for every ball, but start at 1
-  var ballscoretext = [maxballs+1];
+  var maxballs;//120; //maxballs now set in loader to max + 1
+  var matchscoretext; //set up an array with matchscore text for every ball, but start at 1
+  var ballscoretext;
   var ballcount=0;
   //on-screen display
   var commentarytext="default";
@@ -220,6 +221,11 @@ function setupFirstBall() {
 
 //setup the array with the matchscores text
 function setMatchScoreText() {
+  //variable settings done here, in run-time
+  maxballs = maxindex-1;//120; //maxballs now set in loader to max + 1
+  matchscoretext = [maxballs+1]; //set up an array with matchscore text for every ball, but start at 1
+  ballscoretext = [maxballs+1];
+  //thisBall[maxballs]=[0,0,0,0,0,0,0,0]; //blank entry to hold gameballs + 1 result
   matchscoretext[0]="0/0"; //start of game
   //loop through each ball, get result and create a matchscore for that ball
   //put the score into the next ball of the array, so it only shows after the animation has finished.
@@ -243,20 +249,12 @@ function getScoreResult(ballindex) {
     byeruns=thisBall[ballindex][6];
     legbyeruns=thisBall[ballindex][7];
     noballruns=thisBall[ballindex][8];
-    wr=0;
-    nbr=0;
-    if (noballruns>1) {
-      nbr=noballruns-1;
-    }
-    if (wideruns>1) {
-        wr=wideruns-1;
-    }
     var wrt=" ";
         if (wicketresult>0) {
           wrt=" (out)";
         }
     ballruns=0;
-    ballruns=parseInt(currentruns)+parseInt(byeruns)+parseInt(legbyeruns)+wr+nbr;
+    ballruns=parseInt(currentruns)+parseInt(byeruns)+parseInt(legbyeruns)+parseInt(wideruns)+parseInt(noballruns);
     innball=ballindex+1;
     //while we are here, update ballscore text for display
     ballscoretext[ballindex]="("+innball+"/"+maxballs+") This ball result:"+currentruns+" runs "+" wides: "+wideruns+" nb: "+noballruns+" b: "+byeruns+" lb: "+legbyeruns+wrt+"  ";
@@ -272,6 +270,7 @@ function getWicketResult(ballindex) {
 
 //return the data from the 'canv_ballcount' of the 2D array
 function setBallResult() {
+  if (thisBall[canv_ballcount]!='undefined') {
     battername[1]=thisBall[canv_ballcount][0];
     battername[2]=thisBall[canv_ballcount][1];
     bowlername=thisBall[canv_ballcount][2];
@@ -291,7 +290,8 @@ function setBallResult() {
     }
     allruns=0;
     allruns=parseInt(currentruns)+parseInt(byeruns)+parseInt(legbyeruns)+wr+nbr;
-    }
+  }
+}
 
   
 
@@ -359,6 +359,7 @@ function resetMainStates() {
       ball_sprite_y=70;
       ball_sprite_x=crease2-40;
       bwl_sprite_x=crease2*2;
+      bwlstep=2; //start bowler runup slow
       batter_sprite_x[1]=crease1;
       batter_sprite_x[2]=crease2;
       srcX[1]=1120, 
@@ -385,23 +386,26 @@ TO DO: clarify when previous ball is 'dead ball', or goals achieved by all AI ag
 function nextBall() {
     
     //progress to next ball
-    if (batter_goal==="achieved" && bowler_goal==="achieved" && ball_goal==="achieved" && canv_ballcount<maxballs-1) {
+    if (batter_goal==="achieved" && bowler_goal==="achieved" && ball_goal==="achieved" && canv_ballcount<maxballs) {
       canv_ballcount++;
       scoreupdate=0;
       //update the current result, runs
-      setBallResult();
-      resetMainStates();
-      setBatterHelmet(1);
-      setBatterHelmet(2); 
+      if (canv_ballcount<maxballs) {
+        setBallResult();
+        resetMainStates();
+        setBatterHelmet(1);
+        setBatterHelmet(2); 
+    }
     }
 
   }
   
 //frame sets for Bowler modes
+//To Do; make frame advance  proportional to running speed?
 function advanceBowlerFrames() {
   //var bowler_runup=[0,70,140,210,280,350,420,490];
   //var bowler_run=[0,60,60,130,200,200];
-  var bowler_run2=[70,140,210,280,350,420];
+  var bowler_run2=[70,140,210,280,350,420];  //6 frames. 60fps = 10 x this per second.
   var bowler_jump=[630,630,700,770,770,840,910,980,1050]; //630,700,770,770,840,910,980,1050
   var bowler_end=[1050]; // add an appealing bowler frame somewhere
   
@@ -439,7 +443,7 @@ function chooseBatterModeFrames(batter) {
   var bat_block=[1395];
   var bat_drive=[1479];
   //simulation actions
-  var runright=[0,70,140,210,280,350,420,490];
+  var runright=[0,70,140,210,280,350,420,490]; //8 frames
   var runleft=[560,630,700,770,840,910,980,1050];
   var leave=[1255,1255,1255,1255];
   var hit=[1395,1395,1395,1395,1325,1325,1325,1325];
@@ -593,6 +597,7 @@ function doBowl() {
   //GOAL AND MODE TRANSITIONS BASED ON X-POSITION
   //go straight into runup
   if (bwl_sprite_x>jumpstart && bowler_goal==="idle") {
+      bwlstep=8;
       bowler_mode="run";
       bowler_goal="runup";
   }
@@ -633,7 +638,9 @@ function doBowl() {
   
       //MOVEMENT IN MODES
   if (bowler_goal==="runup" || bowler_goal==="delivery") {    
-      var bwlstep=8;
+      if (bwlstep>8) {
+        bwlstep=8; //change this as bowler approaches.
+      } //At 60fps this is 480px per second.
       bwl_sprite_x -= bwlstep; 
     }
   doUmpire();
@@ -1143,11 +1150,16 @@ function drawSprite() {
 
   // BALL RESULT TEXT
   //pre-filled
-  balldescription="Match ball: "+ballscoretext[canv_ballcount];
+  if (typeof(ballscoretext[canv_ballcount])!='undefined') {
+    balldescription="Match ball: "+ballscoretext[canv_ballcount];
+  }
+  else {
+    balldescription="Match ball: Finished innings. "+matchscoretext[maxballs];
+  }
   ctx.fillText(balldescription,crease1+60,txt_y);
   //use the pre-filled matchscores to fill in the matchdescription for this ball
-  gametext="Match score: "+matchscoretext[canv_ballcount];
-  ctx.fillText(gametext,crease1+60,txt_y+30); //line below
+  gametext="Score now: "+matchscoretext[canv_ballcount];
+  ctx.fillText(gametext,crease1+60,txt_y+20); //line below
 
 }
 
@@ -1257,12 +1269,14 @@ function startAnimation() {
   document.addEventListener('keyup', keyUp, false);
   startcanvas();  
   console.log(gameArray[2]); //test we have array 
-  //the nextBall function increments to next ball after set time period (1 second)
-  intvl1=setInterval(nextBall, 1000);  // cf requestAnimationFrame() 
-  intvl2=setInterval(doBatter, 80); //make this character specific, not event
-  intvl3=setInterval(doBowl, 80);
-  intvl4=setInterval(doBall, 30); //smaller delay = higher speed/frames possible
-  intvl5=setInterval(doDrawing, 20);
+  //the nextBall function increments to next ball after set time period (1 second = 1000 units)
+  //aim fr 60 fps for smooth? 16.6 ms per frame.
+  basedelay=32; //~30 fps
+  intvl1=setInterval(nextBall, basedelay*60);  // cf requestAnimationFrame() 
+  intvl2=setInterval(doBatter, basedelay*2); //make this character specific, not event
+  intvl3=setInterval(doBowl, basedelay*1.5); 
+  intvl4=setInterval(doBall, basedelay); 
+  intvl5=setInterval(doDrawing, basedelay); 
   setupFirstBall();  //called once before any of interval function calls start
   //animationLoop();
   console.log("Done");

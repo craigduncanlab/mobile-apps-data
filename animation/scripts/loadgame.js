@@ -11,6 +11,7 @@ var reader;
 var globaltext;
 var playernames=[];
 var defcolours=[];
+var maxindex=0; // to hold the match balls index size for animator.js
 //in localfiles.js (not a class).  Creates event listeners for buttons.
 //need to pause for async;
 
@@ -52,7 +53,7 @@ function mainLoader() {
 	var text = reader.result
 	console.log(text); //check we have file result stored
 	//return false;
-	onLoadPress(text,submitbutton,resetbutton);  //this is in main.js
+	onLoadPress(text,submitbutton,resetbutton);  // initiates animation start
 	},false);
 
   resetbutton.addEventListener("click", function( event ){ 
@@ -121,6 +122,8 @@ function parseGameFile(myText) {
 		gameArray[x]=lines[x+skiprow];
     }
     console.log("Game array size:",gameArray.length);
+    maxindex=parseInt(gameArray.length+1); //for animator.js
+    console.log("maxindex:",maxindex);
     prepareGameArray();
 }
 
@@ -149,8 +152,8 @@ columns=[14,17,11,18,20,19,22,21,23]; //2019 format (game as exported)
    max=firstData.length;
    console.log("length of array to filter:",max);
    for (var y=0;y<max;y++) {
-      thisBall[y] = new Array();
       rowentry=firstData[y];
+      thisBall[y] = new Array();
       console.log(y,rowentry);
     for (data=0;data<columns.length;data++) {
       oldcol=columns[data];
