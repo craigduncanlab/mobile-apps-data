@@ -1,6 +1,10 @@
 /* 
 2019 update of 'matchresults.js'
 14 August 2019-18 August 2019
+2021 : 19 Feb.
+
+Note: this file loads AFTER loadgame.js so any globals defined there persist for this file.
+One of the most important of these is thisBall, the array holding ball results.
 
 */
 
@@ -34,7 +38,8 @@ var numballs = 0;
   var helmet_sprite = [];
   var canvas, ctx,
     canv_width = 600,
-    canv_height = 170,
+    canv_height = 200,
+    batbuffer = 118;
     rightKey = false,
     leftKey = false,
     upKey = false,
@@ -45,7 +50,7 @@ var numballs = 0;
      sprite_y=[]
      batter_sprite_x=[]
      batter_sprite_x[1] = crease1, batter_sprite_x[2]=crease2,
-     sprite_y[1] = canv_height - 108, sprite_y[2] = canv_height - 108,sprite_w = 65, sprite_h = 85,
+     sprite_y[1] = canv_height - batbuffer, sprite_y[2] = canv_height - batbuffer,sprite_w = 65, sprite_h = 85,
      bwl_srcX=0,
      bwl_srcY=0,
      bwl_sprite_x=canv_width*0.9; //make this 90% of width
@@ -61,7 +66,8 @@ var numballs = 0;
      srcX=[];
      srcY=[];
      ball_sprite_x=crease2; //this should be near runend/bwlend
-     ball_sprite_y=70;
+     ball_sprite_y=200-100;//canvas height-100
+     base_ball_y=100; //the ballheight for post-hit on ground
     //----define individual variables from here
     //var bowler_framelist=[560,630,700,770,840,910,980,1050];
     
@@ -129,6 +135,7 @@ var numballs = 0;
     var myfile=""; //TO DO: default value
     //
     var restartcheck=0;
+    var datasize;
 
 //var gameArray = new Array(); //not typed but we want a large array here.  240 balls.
 mainLoader(); 
@@ -194,8 +201,8 @@ function doDrawing() {
           wrt=" (out)";
         }
         innball=canv_ballcount+1;
-              
-        balldescription="Match ball: ("+innball+"/240) This ball result:"+currentruns+" runs "+" wides: "+wideruns+" nb: "+noballruns+" b: "+byeruns+" lb: "+legbyeruns+wrt+"  ";
+        //balldescription is not global?    
+        balldescription="Ball: ("+innball+"/"+datasize+") This ball result:"+currentruns+" runs "+" wides: "+wideruns+" nb: "+noballruns+" b: "+byeruns+" lb: "+legbyeruns+wrt+"  ";
         drawSprite();
         }
 }
@@ -214,6 +221,7 @@ function doDrawing() {
 //get details for first ball before animation starts
 function setupFirstBall() {
      canv_ballcount=0; //first index value
+     datasize=thisBall.length;
      setBallResult();
      setBatterHelmet(1);
      setBatterHelmet(2); 
@@ -260,7 +268,7 @@ function startcanvas() {
   bwl_ft = new Audio(mf+"bwl_ft.wav");
   bat_tap = new Audio(mf+"bat_tap.wav");
   ctx.font = "10px Arial";
-  bgnd.src = mf+'background4.png';
+  bgnd.src = mf+'background5.png';
   ball_sprite.src=mf+'ballimg.png';
   helmet_sprite[1].src = mf+'helmets.png';
   helmet_sprite[2].src = mf+'helmets.png';
@@ -304,7 +312,7 @@ function resetMainStates() {
       //bwl_sprite_x=Math.min(crease2+200+Math.floor((Math.random() * 100) + 1),2*crease2); //(crease1+300)*2=
       //positions
       bowler_frame=0;
-      ball_sprite_y=70;
+      ball_sprite_y=base_ball_y;
       ball_sprite_x=crease2-40;
       bwl_sprite_x=crease2*2;
       batter_sprite_x[1]=crease1;
@@ -328,7 +336,7 @@ TO DO: clarify when previous ball is 'dead ball', or goals achieved by all AI ag
 */
 function nextBall() {
   
-    if (batter_goal==="achieved" && bowler_goal==="achieved" && ball_goal==="achieved" && canv_ballcount<239) {
+    if (batter_goal==="achieved" && bowler_goal==="achieved" && ball_goal==="achieved" && canv_ballcount<datasize) {
       canv_ballcount++;
       scoreupdate=0;
 
@@ -339,8 +347,8 @@ function nextBall() {
       setBatterHelmet(2); 
    
   }
-  //if innings balls completed
-  if (canv_ballcount>120 && inningscount==1) { //Innings1.getMaxBalls()
+  //if innings balls completed. REDUNDANT?
+  if (canv_ballcount>datasize && inningscount==1) { //Innings1.getMaxBalls()
     //canv_ballcount=0;
     inningscount++;
   }
@@ -476,6 +484,7 @@ function getBowlerHead() {
 
 //TO DO: store left, right helmet frame for each batter
 //So they can be looked up, not relculated every frame
+//
 
 function getBatterHelmet(batter) {
   if (batterhead_mode[batter]==="left") {
@@ -724,7 +733,7 @@ function doBatter() {
     //BALL CONDITIONS
     var bouncer=false;
     //ball_mode==="delivery" && 
-    if (ball_sprite_x<bouncepoint && ball_sprite_y<95 && batter_goal==="idle") {
+    if (ball_sprite_x<bouncepoint && ball_sprite_y<(base_ball_y-5) && batter_goal==="idle") {
       bouncer=true;
     }
 
@@ -912,7 +921,7 @@ function doBall() {
         console.log("Delivery transition", ball_sprite_x);
 
         ball_sprite_x=crease2-40; //same as jump end?
-        ball_sprite_y=70;
+        ball_sprite_y=base_ball_y;
 
     //pre-calculate bouncer trajectory
         //short balls if no runs or wicket resulted.  random 150 is a lot of bouncers.
@@ -983,9 +992,9 @@ function printGoals() {
 //
 //ball hit on ground with small wobble
 function moveBall_shots() {
-    
+    range=60;
     bobble = 0+Math.floor((Math.random() * 3) + 1); 
-    ball_sprite_y= 130-bobble; 
+    ball_sprite_y= base_ball_y+range-bobble; //was 130;
     step=8;
     ball_sprite_x+=step;
     }
@@ -994,8 +1003,10 @@ function moveBall_shots() {
 //TO DO: parabola to a bounce point in front of crease1
 function moveBall_xpos(bouncex) {
    //horizontal - stops when reaches crease1.  This function not called if that happens!
-   ball_release=70;
-   var yrange=150-ball_release;
+   ball_release=base_ball_y; //was 70
+   range=60;
+   bouncelimit=base_ball_y+range;// base_ball_y+80; //was 150
+   var yrange=bouncelimit-ball_release; 
    var xstep=12; //xrange is about 200 pixels.  12 steps & 30ms per step = 0.3 seconds.
    var xrange=crease2-20-bouncex;
    var xframes=Math.round(xrange/xstep); //linear not parabolic
@@ -1003,9 +1014,9 @@ function moveBall_xpos(bouncex) {
    //console.log(xstep,xrange,xframes,ystep);
    //var ystep=12;
    //correction if bounce plane between frame-steps
-   if (ball_sprite_y+ystep>140) {
+   if (ball_sprite_y+ystep>bouncelimit) {
     bouncex=ball_sprite_x+1;
-    ball_sprite_y=140;
+    ball_sprite_y=bouncelimit-10;
    }
    if (ball_sprite_x<bouncex) {
     //ystep=-8;
@@ -1068,9 +1079,11 @@ function drawSprite() {
   //ctx.drawImage(bowler_sprite,bwl_srcX,bwl_srcY,sprite_w,sprite_h,550,bwl_sprite_y,sprite_w,sprite_h);
 
   //PLAYER NAMES TEXT
-  var txt_y=canv_height-5;
-  ctx.fillText(battername[1],10,txt_y);
-  ctx.fillText(battername[2],crease2+100,txt_y);
+  var txt_y_score=canv_height-5;
+  var txt_y=canv_height-15;
+  var txt_bwl_y=canv_height-15;
+  ctx.fillText(battername[1],30,txt_y);
+  ctx.fillText(battername[2],crease2+10,txt_y); //was 100
   //
    var overstring="";
    var overball=(canv_ballcount+1) % 6;
@@ -1086,11 +1099,18 @@ function drawSprite() {
          }
         }
 
-  var bowlerdata=bowlername+"  "+overstring;
-  ctx.fillText(bowlerdata,canv_width-40,txt_y);
+  var bowlerdata=bowlername;//+"  "+overstring;
+  ctx.fillText(bowlerdata,canv_width-40,txt_bwl_y);
+  ctx.fillText(overstring,canv_width-40,txt_y_score);
 
   // BALL RESULT TEXT
-  ctx.fillText(balldescription,crease1+60,txt_y);
+  ctx.fillText(balldescription,crease1+60,txt_y_score);
+  //TEAM NAMES TEXT
+  teamslabel=bat_tm1+" v. "+bat_tm2;
+  ctx.fillText(teamslabel,10,10);
+  //GAME DATE TEXT
+  ctx.fillText(gamedate,crease2,10)
+
 
 }
 
@@ -1138,7 +1158,7 @@ function keyDown(e) {
     keymessage="key down";
     //canv_ballcount=238; //maxballs-1
     canv_ballcount=canv_ballcount+5; //6 balls = 1 over in juniors
-    if (canv_ballcount>239) {
+    if (canv_ballcount>(datasize-1)) {
           canv_ballcount=0;
          }
     cleanUpGame();
@@ -1148,7 +1168,7 @@ function keyDown(e) {
          keymessage="up key";
           canv_ballcount=canv_ballcount-7;
           if (canv_ballcount<-1) {
-            canv_ballcount=239;
+            canv_ballcount=datasize-1;
           }
           cleanUpGame();
           nextBall();  //advances to next ball
@@ -1156,9 +1176,9 @@ function keyDown(e) {
    else if (e.keyCode == 37) {
          keymessage="left arrow";
          canv_ballcount=canv_ballcount-2; //to allow for next ball increment by 1
-         canv_ballcount=canv_ballcount%240;
+         canv_ballcount=canv_ballcount%datasize;
          if (canv_ballcount<-1) {
-          canv_ballcount=239;
+          canv_ballcount=datasize-1;
          }
          cleanUpGame();
          nextBall();      
@@ -1181,8 +1201,8 @@ function keyDown(e) {
 
    else if (e.keyCode == 39) {
          keymessage="right arrow";
-         canv_ballcount=canv_ballcount%240;
-         if (canv_ballcount>239) {
+         canv_ballcount=canv_ballcount%datasize;
+         if (canv_ballcount>datasize-1) {
           canv_ballcount=0;
          }
          cleanUpGame();

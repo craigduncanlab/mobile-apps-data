@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Junior Cricket Match Results Explorer</title>
+<title>Cricket Match Animator</title>
 
 </head>
 <style>
@@ -47,13 +47,13 @@ p {
 </style>
 
 <body>
-<div align="center"><p>Junior Cricket Scorer Match Explorer</p>
-<p><br></p>
+<div align="center"><p>Cricket Match Animator</p>
 </div>
 
 <!-- Load file from local (client) side -->
 <div align="center">
-	<p>Select file to load:<input type="file" id="fileInput"></p>
+	<p>Select CSV file to load:<input type="file" id="fileInput"></p>
+	<p>(For valid CSV files see bottom of page)</p>
 </div>
 <div align="center">
 <label><button type="submit" id="submitButton" disabled="true">Load</button></label>
@@ -64,20 +64,41 @@ p {
 	<p class="instb">Progressive score</p>
 	<p class="inst">(Coming soon)</p></td>
 <td class="score">
-<canvas id="canvas" width="700" height="170"></canvas></div></td></tr>
-<td class="score"><p class="instb">Keys for control:</p>
-	<p></p>
-	<p class="inst">Left/right arrow: back/fwd 1 ball</p>
-	<p class="inst">Up/down arrows: back/fwd 6 balls (1 over)</p>
-	<p></p>
-	<p class="inst">"d" = 'duck'</p>
-	<p class="inst">"." = 'bat up'</p>
-	<p class="inst">"," = 'high bat'</p></td></tr></table>
+<canvas id="canvas" width="700" height="200"></canvas></div></td></tr>
+<td class="score"></td></tr></table>
 </div>
 </table>
 </div>
 <div class="instructions" align="centre">
 	
+</div>
+<div align="center">
+	<p><b>Keys for control</b></p>
+</div>
+<div>
+	<p></p>
+	<p>Left/right arrow: back/fwd 1 ball</p>
+	<p>Up/down arrows: back/fwd 6 balls (1 over)</p>
+	<p></p>
+	<p>"d" = 'duck'</p>
+	<p>"." = 'bat up'</p>
+	<p>"," = 'high bat'</p>
+	<p><b>Where can you find CSV data files to load here?</b></p>
+</div>
+<div>
+	<p>This animator will recognise the Junior Cricket Scorer CSV files that you can email from your device.</p>
+	<p>You can support the development of this cricket match animator by purchasing a copy of my Junior Cricket Scorer for iOS from the App Store.</p>
+	<p>To obtain the CSV files, score your matches using Junior Cricket Scorer on iPhone or iPad, then email the results to yourself, and save the CSV files to your PC.</p>
+	<p><br></p>
+	<p><b>CSV formats other than Junior Cricket Scorer</b></p>
+	<p></p>
+	<p>The comprehensive 'CricSheet' data produced by Stephen Rushe(*) for several cricket formats, including BBL and Test matches, can also be loaded here.</p>
+	<p>Instructions:</p>
+<p>1. Go to https://cricsheet.org/downloads/#experimental and download one of the new' CSV format zip files (e.g. https://cricsheet.org/downloads/bbl_male_csv2.zip).  </p>
+<p>2. Extract the zip files to your computer so there are folders with CSV files in them.
+<p>3. Load up an individual CSV file from your PC into this page. </p>
+<p></p>
+<p> (*) See Twitter @srushe and @cricsheet
 </div>
 <!-- If script refers to values in HTML tags, put script second -->
 

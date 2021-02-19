@@ -11,6 +11,11 @@ var reader;
 var globaltext;
 var playernames=[];
 var defcolours=[];
+var firstlinedata;
+var matchdatatype; //This is to distinguish JCS, cricsheet
+var bat_tm1;
+var bat_tm2;
+var gamedate;
 //in localfiles.js (not a class).  Creates event listeners for buttons.
 //need to pause for async;
 
@@ -90,6 +95,18 @@ function onLoadPress(globaltext,submitbutton,resetbutton) {
 //function to set some default names and helmet colour sequences so that pairs have different colours
 //based on 4 colour array index values [0,3]
 function setdefaultHelmets() {
+  if (matchdatatype==0) {
+    JCShelmets();
+  }
+  if (matchdatatype==1){
+    CricSheetHelmets();
+  }
+}
+
+function JCShelmets() {
+  bat_tm1=thisBall[1][9];
+  bat_tm2=thisBall[1][10];
+  gamedate=thisBall[1][11];
   basecol=0;
   for (b=0;b<thisBall.length;b++) {
     nextname=thisBall[b][0];
@@ -101,12 +118,54 @@ function setdefaultHelmets() {
     }
 }
 
+function CricSheetHelmets() {
+  teams=["West Indies","Bangladesh","England","Australia","Sri Lanka","South Africa","New Zealand","India"];
+  tcol=[1,0,2,3,0,3,1,2]; //these are the colours we have in helmet image file
+  bat_tm1=thisBall[1][9];
+  bat_tm2=thisBall[1][10];
+  gamedate=thisBall[1][11];
+  console.log("Team 1:",bat_tm1);
+  console.log("Team 2:",bat_tm2);
+  basecol1=0;
+  basecol2=1;
+  for (t=0;t<teams.length;t++) {
+        if (teams[t]==bat_tm1) {
+          basecol1=tcol[t];
+        }
+        if (teams[t]==bat_tm2) {
+          basecol2=tcol[t];
+        }
+  }
+  //Goes through whole match data, for the abbreviated entries (thisBall DNE lines)
+  console.log("data entries:",thisBall.length);
+  for (b=0;b<thisBall.length;b++) {
+      nextname=thisBall[b][0];
+      bat_teamname=thisBall[b][9];
+      if (playernames.includes(nextname)==false) {
+        playernames.push(nextname);
+        console.log("Player:",playernames[playernames.length-1]);
+        if (bat_teamname==bat_tm1) {
+          defcolours.push(basecol1);
+          flag=1;
+        }
+        if (bat_teamname==bat_tm2) {
+          defcolours.push(basecol2);
+          flag=1;
+        }
+        console.log("Colour:",defcolours[defcolours.length-1]);
+      }
+    }
+}
+
 //convert CSV file to ball by ball array
 //Critical: check your line endings in CSV
 //If line end is 0A (hex) only, use \n for split
+//CricSheet data uses double quotes for entries that have commas in the field (like Excel).
+//Need to parse for these. Reg Exp?
+
 function parseGameFile(myText) {
 
-	var lines = new Array();
+	//var lines = new Array();
     lines = myText.split('\n'); //my CSV has CR not LF .'0A' in hex = 10 = 
     
     var rows = lines.length; //this is a count e.g. 7
@@ -117,11 +176,41 @@ function parseGameFile(myText) {
     var balls;
     //2017 format: var skiprow=2;   //first two lines in file are not game ball data
     var skiprow=1; //2019 (Junior Cricket Scorer)
+    firstlinedata=lines[0];
     for (x=0;x<(rows-skiprow-1);x++) {
-		gameArray[x]=lines[x+skiprow];
+		  gameArray[x]=lines[x+skiprow];
     }
     console.log("Game array size:",gameArray.length);
-    prepareGameArray();
+    matchdatatype=checkFileType();
+    firstData=prepareGameArray();
+    if (matchdatatype==0) {
+        console.log("FileType: Junior Cricket Scorer");
+        filterGameFileJCS(firstData);
+    }
+    if (matchdatatype==1) {
+        console.log("FileType: CricSheet");
+        // to do: for any quoted sections, do not split on enclosed commas
+        myrow=lines[1].split(','); 
+        console.log("Row 2:",myrow);
+        bat_tm1=myrow[6].trim(); //initial batting team
+        bat_tm2=myrow[7].trim(); //initial bowling team
+        filterGameFileCricSheet(firstData);
+    }
+}
+
+function checkFileType(){
+  cricsh2="match_id,season,start_date,venue,innings,ball,batting_team,bowling_team,striker,non_striker,bowler,runs_off_bat,extras,wides,noballs,byes,legbyes,penalty,wicket_type,player_dismissed,other_wicket_type,other_player_dismissed"
+  jcs="GameCode,GameName,GameDate,BallTime,Ball,BowlingTeamCode,BowlingTeam,BattingTeamCode,BattingTeam,BowlerID,BowlerCode,Bowler, StrikerID,StrikerCode,Striker,NonstrikerID,NonstrikerCode,Nonstriker,Runs,Wides,Wickets,Legbyes, Byes,Noballs,Runouts,whoRO,Bowled,Caught,c&b,ct(wk),Stumped,Hit-wkt,AssistID,AssistCode,AssistName"
+  console.log("Firstline:",firstlinedata);
+  if (firstlinedata==cricsh2) {
+    return 1; //code for cricksheet
+  }
+  if (firstlinedata==jcs) {
+    return 0; //code for junior cricket scorer
+  }
+  else {
+    return 0;
+  }
 }
 
 //read in csv file and split columns into new array
@@ -134,16 +223,16 @@ function prepareGameArray() {
       firstData[y] = gameArray[y].split(',');  //split the game data into an array of entries.
       }
   }
-  filterGameFile(firstData);
+  return firstData;
 }
 
 //filter  wide array to abridged array.  These are the current 8 data columns used by the animator
 //Creates a filtered array called "thisBall" that is used by animator.js
-//we need this to be battername, bowlername, currentruns,wicketresult,wideruns,byeruns,legbyeruns,bnoballruns
+//we need this to be battername, nonstriker,bowlername, currentruns,wicketresult,wideruns,byeruns,legbyeruns,bnoballruns
 
-function filterGameFile(firstData) {
+function filterGameFileJCS(firstData) {
 //columns=[3,6,7,8,9,10,11,12]; //2017 format
-columns=[14,17,11,18,20,19,22,21,23]; //2019 format (game as exported)
+columns=[14,17,11,18,20,19,22,21,23,8,6,2]; //2019 format (game as exported)
  //columns=[6,7,8,10,9,12,22,21,23]; //7.1.2019 raw format
 
    max=firstData.length;
@@ -166,3 +255,38 @@ columns=[14,17,11,18,20,19,22,21,23]; //2019 format (game as exported)
 //BowlerID,BowlerCode,Bowler, StrikerID,StrikerCode,Striker,
 //NonstrikerID,NonstrikerCode,Nonstriker,
 //Runs,Wides,Wickets,Legbyes, Byes,Noballs,Runouts,whoRO,Bowled,Caught,c&b,ct(wk),Stumped,Hit-wkt,AssistID,AssistCode,AssistName 
+
+//CricSheetCSV2 (new) as at 19 Feb 2021
+function filterGameFileCricSheet(firstData) {
+
+columns=[8,9,10,11,18,13,15,16,14,6,7,2]; 
+//2021format (these are index numbers starting at 0 for first column)
+
+   max=firstData.length;
+   console.log("length of array to filter:",max);
+   for (var y=0;y<max;y++) {
+      thisBall[y] = new Array();
+      rowentry=firstData[y];
+      //console.log(y,rowentry);
+    for (data=0;data<columns.length;data++) {
+      oldcol=columns[data];
+      myolddata=rowentry[oldcol].trim(); //trims leading or end whitespace
+      
+      if (myolddata.length>0) {
+      //each array entry is a row of 'observations'
+
+      //convert to a numeric 1=wicket, 0=nowicket for original column index 18
+        if (oldcol==3 && myolddata.length>2) {
+            myolddata==1;
+        }
+        if (oldcol==3 && myolddata.length==0) {
+            myolddata==0;
+        }
+      } //end if for old data
+      else {
+        myolddata=0; //generic
+      }
+      thisBall[y][data]=myolddata;
+      }
+    } //end for loop for data file
+  }
