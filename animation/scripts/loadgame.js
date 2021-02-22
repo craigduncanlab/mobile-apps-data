@@ -1,8 +1,5 @@
-//localfiles.js
-//function to read a local file and convert it to new format; display in broswer
-// 13-14 August 2019
-// Dependencies: 
-
+//Match animator script loadgame.js
+//(c) Craig Duncan 2019-2021
 
 //globals
 var gameArray= new Array();
@@ -15,6 +12,7 @@ var firstlinedata;
 var matchdatatype; //This is to distinguish JCS, cricsheet
 var bat_tm1;
 var bat_tm2;
+var stadium;
 var gamedate;
 //in localfiles.js (not a class).  Creates event listeners for buttons.
 //need to pause for async;
@@ -40,12 +38,15 @@ function mainLoader() {
 	//reader.readAsText(file);
 	var submitbutton = document.getElementById("submitButton");
   var resetbutton = document.getElementById("resetButton");
+  var demobutton = document.getElementById("demoButton");
 	var selector = document.getElementById('fileInput');
-
+  demobutton.disabled=false; //default is disabled so reset here
+  //load button
 	selector.addEventListener('change', function( event ){ 
     event.preventDefault();
     readFile(event);
     submitbutton.disabled=false;
+    demobutton.disabled=false;
   //set focus to window to handle keyboard events
    },false);
 
@@ -57,9 +58,11 @@ function mainLoader() {
 	var text = reader.result
 	console.log(text); //check we have file result stored
 	//return false;
-	onLoadPress(text,submitbutton,resetbutton);  //this is in main.js
+  //call function when submit is called
+	onLoadPress(text,submitbutton,resetbutton,demobutton);  //this is in this loadgame.js
 	},false);
 
+  //function on press of reset button
   resetbutton.addEventListener("click", function( event ){ 
   event.preventDefault();
   
@@ -67,15 +70,44 @@ function mainLoader() {
   selector.disabled=false;
   submitbutton.disabled=true;
   resetbutton.disabled=true;
+  demobutton.disabled=false;
   location.reload();
 
 
   },false);
 
+  //demo button event - server side loader?
+  demobutton.addEventListener("click", function( event ){ 
+  //
+  demoPress();
+  //reload and button states
+  selector.disabled=false;
+  submitbutton.disabled=true;
+  resetbutton.disabled=false;
+  demobutton.disabled=true;
+
+     },false);
+
+}
+
+//function called when Demo press event is detected
+function demoPress() {
+  //load data
+  try {
+  let globaltext=fetch("matches/demogame.csv") //default is a GET of file.  Needs to be running on webserver
+  parseGameFile(globaltext)
+  setdefaultHelmets();
+  startAnimation();
+ }
+ catch {
+   console.log("Caught Demo fetch error.  Probably not running on server.")
+   return;
+ }
+
 }
 
 //post-loading function.  Here, does conversion of files
-function onLoadPress(globaltext,submitbutton,resetbutton) {
+function onLoadPress(globaltext,submitbutton,resetbutton,demobutton) {
 	if (globaltext==null) {
 		console.log("Error with loading");
 	}
@@ -107,6 +139,7 @@ function JCShelmets() {
   bat_tm1=thisBall[1][9];
   bat_tm2=thisBall[1][10];
   gamedate=thisBall[1][11];
+  stadium=thisBall[1][12];
   basecol=0;
   for (b=0;b<thisBall.length;b++) {
     nextname=thisBall[b][0];
@@ -119,13 +152,15 @@ function JCShelmets() {
 }
 
 function CricSheetHelmets() {
-  teams=["West Indies","Bangladesh","England","Australia","Sri Lanka","South Africa","New Zealand","India"];
-  tcol=[1,0,2,3,0,3,1,2]; //these are the colours we have in helmet image file
+  teams=["West Indies","Bangladesh","England","Australia","Sri Lanka","South Africa","New Zealand","India","Perth Scorchers","Brisbane Heat","Sydney Sixers"];
+  tcol=[1,0,2,3,0,3,1,2,1,2,2]; //these are the colours we have in helmet image file
   bat_tm1=thisBall[1][9];
   bat_tm2=thisBall[1][10];
   gamedate=thisBall[1][11];
+  stadium=thisBall[1][12];
   console.log("Team 1:",bat_tm1);
   console.log("Team 2:",bat_tm2);
+  console.log("Stadium:",stadium);
   basecol1=0;
   basecol2=1;
   for (t=0;t<teams.length;t++) {
@@ -259,7 +294,7 @@ columns=[14,17,11,18,20,19,22,21,23,8,6,2]; //2019 format (game as exported)
 //CricSheetCSV2 (new) as at 19 Feb 2021
 function filterGameFileCricSheet(firstData) {
 
-columns=[8,9,10,11,18,13,15,16,14,6,7,2]; 
+columns=[8,9,10,11,18,13,15,16,14,6,7,2,3]; 
 //2021format (these are index numbers starting at 0 for first column)
 
    max=firstData.length;
@@ -267,6 +302,13 @@ columns=[8,9,10,11,18,13,15,16,14,6,7,2];
    for (var y=0;y<max;y++) {
       thisBall[y] = new Array();
       rowentry=firstData[y];
+      //if the venue column has been split by a comma, adjust accordingly
+      if (rowentry.length==22) {
+        columns=[8,9,10,11,18,13,15,16,14,6,7,2,3]; 
+      }
+      else {
+        columns=[9,10,11,12,19,14,16,17,15,7,8,2,3]; 
+      }
       //console.log(y,rowentry);
     for (data=0;data<columns.length;data++) {
       oldcol=columns[data];
@@ -276,11 +318,16 @@ columns=[8,9,10,11,18,13,15,16,14,6,7,2];
       //each array entry is a row of 'observations'
 
       //convert to a numeric 1=wicket, 0=nowicket for original column index 18
-        if (oldcol==3 && myolddata.length>2) {
+        if (data==4 && myolddata.length>2) {
             myolddata==1;
         }
-        if (oldcol==3 && myolddata.length==0) {
+        if (data==4 && myolddata.length==0) {
             myolddata==0;
+        }
+      // for stadiums in split files
+        if (data==12 && rowentry.length>22) {
+          myolddata=myolddata+","+rowentry[oldcol+1];
+          myolddata=myolddata.replace(/"/g,"");  //g for replace all of quotes
         }
       } //end if for old data
       else {

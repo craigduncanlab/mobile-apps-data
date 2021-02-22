@@ -1,10 +1,7 @@
-/* 
-2019 update of 'matchresults.js'
-14 August 2019-18 August 2019
-2021 : 19 Feb.
+/* Match Animator (c) 2019-21 Craig Duncan
 
 Note: this file loads AFTER loadgame.js so any globals defined there persist for this file.
-One of the most important of these is thisBall, the array holding ball results.
+Includes thisBall, the array holding ball results.
 
 */
 
@@ -1106,7 +1103,7 @@ function drawSprite() {
   // BALL RESULT TEXT
   ctx.fillText(balldescription,crease1+60,txt_y_score);
   //TEAM NAMES TEXT
-  teamslabel=bat_tm1+" v. "+bat_tm2;
+  teamslabel=bat_tm1+" v. "+bat_tm2+ " (at "+stadium+")";
   ctx.fillText(teamslabel,10,10);
   //GAME DATE TEXT
   ctx.fillText(gamedate,crease2,10)

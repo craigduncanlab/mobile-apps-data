@@ -1,0 +1,130 @@
+<!---Match animator loadgame.html -->
+<!---(c) Craig Duncan 2019-2021 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cricket Match Animator</title>
+
+</head>
+<style>
+body {
+  margin:0;
+  padding:0;
+}
+canvas {
+  display:block;
+  margin:20px auto 0;
+  border:1px dashed #ccc;
+}
+
+table {
+	border: 0px;
+	}
+	.score {
+		border: 1px solid black;
+	}
+
+td {
+	border: 0px;
+	}
+	
+div {
+
+}
+	.filesection {
+	outline-style: dotted;
+	background-color: #00ffff;
+	}
+
+  .maintitle {
+    font-size: 20px;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+  }
+p {
+    color: black;
+  }
+  .title {
+    font-size: 18px;
+  }
+
+  .title2 {
+    font-size: 16px;
+  }
+  .inst {
+    font-size: 12px;
+  }
+  .instb {
+  	font-weight: bold;
+    font-size: 10px;
+  }
+  .info {
+  	font-size: 16px;
+  	margin-left: 40px;
+  	margin-right:40px;
+  }
+  .keyinfo {
+  	font-size: 14px;
+  }
+</style>
+
+<body>
+<div class="maintitle" align="center"><p>Cartoon Cricket !</p>
+</div>
+
+<!-- Load file from local (client) side -->
+<div align="center">
+	<p>CSV cricket match local data file to load:<input type="file" id="fileInput"> or <label><button type="submit" id="demoButton" disabled="true">Demo</button></label></p>
+	<p>(For valid CSV files see bottom of page)</p>
+</div>
+<div align="center">
+<label><button type="submit" id="submitButton" disabled="true">Load</button></label>
+<label><button type="submit" id="resetButton" disabled="true">Reset</button></label>
+</div>
+<div class="graphic" align="center">
+<table>
+<td class="score">
+<canvas id="canvas" width="700" height="200"></canvas></div></td></tr>
+</table>
+</div>
+<div class="instructions" align="centre">
+	
+</div>
+<div class="maintitle" align="center">
+	<p class="title"><b>Animation control</b></p>
+</div>
+<div align="center">
+	<p class="keyinfo"></p>
+	<p class="keyinfo"><b>Left/right arrow</b>: back/fwd 1 ball | <b>Up/down arrows</b>: back/fwd 6 balls | <b>d</b> = 'duck' | <b>.</b> = 'bat up' | <b>,</b> = 'high bat'</p>
+</div>
+<div class="filesection">
+	<p class="title" align="center"><b>Where can you find CSV data files to load here?</b></p>
+	<p class="info">Score your own cricket matches using <b>Junior Cricket Scorer</b> for iPhone or iPad</p>
+	<p class="info">Then email the results to yourself, and save the CSV files to your PC.</p>
+	<p class="info">Please support the development of this cricket match animator by purchasing a copy of my Junior Cricket Scorer for iOS from the App Store.</p>
+	<p class="info"><br></p>
+	<p class="title" align="center"><b>Other CSV match formats</b></p>
+	<p class="info"></p>
+	<p class="info">Alternatively, use 'CricSheet' data produced by Stephen Rushe(*) for several cricket match formats, including BBL and Test matches.</p>
+	<p class="info">Instructions for using CricSheet data:</p>
+<p class="info">1. Go to https://cricsheet.org/downloads/#experimental and download one of the 'new' CSV format zip files (e.g. https://cricsheet.org/downloads/bbl_male_csv2.zip).  </p>
+<p class="info">2. Extract the zip files to your computer so there are folders with CSV files in them.
+<p class="info">3. Load up an individual CSV file from your PC into this page. </p>
+<p class="info"></p>
+<p class="info"> (*) See Twitter @srushe and @cricsheet
+</div>
+
+<!-- Use csv files pre-loaded to server-->
+
+<!-- If script refers to values in HTML tags, put script second -->
+
+<script src="scripts/loadgame.js"></script>
+<script src="scripts/animator.js"></script>
+
+<!--
+<script src="livescore.js"></script> 
+<script src="innings.js"></script>
+<script src="chardata.js"></script>
+-->
+</body>
+</html>
