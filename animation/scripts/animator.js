@@ -1084,11 +1084,9 @@ function drawSprite() {
   The burden on the program at the moment is that it must select which helmet iamge with the correct colour, and then the sprite with the relevant 'direction'.
   Suitable pre-packaging of the information would have the program colourise 2 helmet images (one in each direction) and just choose which of these to use at draw time.
   */
-  getBatterHelmet(1); //get batter helmet for batter 1
-  testhelmet=srcX_helmet[1];
-  for (i in testhelmet.values) {
-    testhelmet.
-  }
+  getBatterHelmet(1); //get batter helmet for batter 1.  
+  //This doesn't change the source file;  
+  //It changes the sub-rectangle reference to helmet colour to be used in the drawImage() method.
   getBatterHelmet(2); //get batter helmet for batter 2
   /*
 
