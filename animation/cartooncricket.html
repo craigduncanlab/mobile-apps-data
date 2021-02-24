@@ -9,30 +9,29 @@
 </head>
 <style>
 body {
-  background-color:#96A8C8;
+  background-color:#00A8C5;
   text-align:center;
   font-size:16px;
   font-family:Lucida,Helvetica,sans-serif;
   font-weight:500;
   text-decoration: none;
-  position: absolute;
-  left: 50%;
-  width: 780px;
-  margin-left: -390px;
-  margin:0;
-  padding:0;
+  position: relative;
+  width: 100%;
+  margin-left: 0px;
 }
 canvas {
   display:block;
   margin:20px auto 0;
   border:1px dashed #ccc;
+  background-color: #ffffff;
 }
 
 table {
 	border: 0px;
 	}
 	.score {
-		border: 1px solid black;
+		background-color: #ffffff
+    border: 1px solid black;
 	}
 
 td {
@@ -43,7 +42,7 @@ div {
 
 }
 	.filesection {
-	outline-style: dotted;
+	outline-style: solid;
 	background-color: #00ffff;
   text-align: left;
 	}
@@ -51,6 +50,22 @@ div {
   .maintitle {
     font-size: 20px;
     font-family: "Comic Sans MS", "Comic Sans", cursive;
+    width: 300px;
+    height: 30px; 
+    left:50%;
+}
+
+.anim_controls {
+    font-size: 20px;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    background-color: #ffffff;
+    border-radius: 25px;
+    border: 2px solid #000000;
+    padding: 20px; 
+    width: 700px;
+    height: 90px; 
+    left:60%;
+}
   }
 p {
     color: black;
@@ -85,26 +100,21 @@ p {
 
 <!-- Load file from local (client) side -->
 <div align="center">
-	<p>CSV cricket match local data file to load:<input type="file" id="fileInput"> or <label><button type="submit" id="demoButton" disabled="true">Demo</button></label></p>
-	<p>(For valid CSV files see bottom of page)</p>
+	<p>Load a .csv data file from your PC:<input type="file" id="fileInput"> or <label><button type="submit" id="demoButton" disabled="true">Demo</button></label></p>
 </div>
 <div align="center">
 <label><button type="submit" id="submitButton" disabled="true">Load</button></label>
 <label><button type="submit" id="resetButton" disabled="true">Reset</button></label>
 </div>
-<div class="graphic" align="center">
-<table>
-<td class="score">
-<canvas id="canvas" width="700" height="200"></canvas></div></td></tr>
-</table>
+<div class="score">
+<canvas id="canvas" width="700" height="200"></canvas>
 </div>
-<div class="instructions" align="centre">
-	
+<div>
+	<p></p>
+  <p></p>
 </div>
-<div class="maintitle" align="center">
+<div class="anim_controls" align="center">
 	<p class="title"><b>Animation control</b></p>
-</div>
-<div align="center">
 	<p class="keyinfo"></p>
 	<p class="keyinfo"><b>Left/right arrow</b>: back/fwd 1 ball | <b>Up/down arrows</b>: back/fwd 6 balls | <b>d</b> = 'duck' | <b>.</b> = 'bat up' | <b>,</b> = 'high bat'</p>
 </div>
@@ -118,7 +128,7 @@ p {
 	<p class="info"></p>
 	<p class="info">Alternatively, use 'CricSheet' data produced by Stephen Rushe(*) for several cricket match formats, including BBL and Test matches.</p>
 	<p class="info">Instructions for using CricSheet data:</p>
-<p class="info">1. Go to https://cricsheet.org/downloads/#experimental and download one of the 'new' CSV format zip files (e.g. https://cricsheet.org/downloads/bbl_male_csv2.zip).  </p>
+<p class="info">1. Go to <a href="https://cricsheet.org/downloads/#experimental">https://cricsheet.org/downloads/#experimental</a> and download one of the 'new' CSV format zip files (e.g. <a href="https://cricsheet.org/downloads/bbl_male_csv2.zip">BBL male data</a>).  </p>
 <p class="info">2. Extract the zip files to your computer so there are folders with CSV files in them.
 <p class="info">3. Load up an individual CSV file from your PC into this page. </p>
 <p class="info"></p>
