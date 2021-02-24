@@ -480,9 +480,9 @@ function getBowlerHead() {
 
 
 //TO DO: store left, right helmet frame for each batter
-//So they can be looked up, not relculated every frame
+//So they can be looked up, not recalculated every frame
 //
-
+//input batter is '1' or '2' depending on batter of interest
 function getBatterHelmet(batter) {
   if (batterhead_mode[batter]==="left") {
     srcX_helmet[batter]=bat_helm_lt[batter];
@@ -1032,6 +1032,17 @@ function moveBall_xpos(bouncex) {
 
 function drawSprite() {
   ctx.drawImage(bgnd,0,0); //offset.  no scaling yet.
+
+  /* In this section, choosing which sprite to use from a particular sprite graphic strip is a general function.
+  We could generalise this to make it clear this is a mechanical procedure repeated for each sprite.
+
+  The alternative is to find that image data separately, and pass that to the simplest drawImage function:
+  ctx.drawImage(image, dx, dy); when simply specifying an image you don't need its scaled width/height.
+  In the current code dx and dy are represented by _sprite_x and _sprite_y terms, and the width and height are sprite_w,sprite_h
+  i.e. how efficient is drawImage?
+
+  It only needs to be done if there is a change in the state, but this isn't considered here
+  */
   
   //UMPIRE
   ctx.drawImage(umpire_sprite,ump_srcX,ump_srcY,sprite_w,sprite_h,ump_sprite_x,ump_sprite_y,sprite_w,sprite_h);
@@ -1068,10 +1079,34 @@ function drawSprite() {
   if (batter_mode[1]==="block") {
        helmet_pos_x[1]=helmet_pos_x[1]+5;
   }
-  //
-  getBatterHelmet(1);
-  getBatterHelmet(2);
-  ctx.drawImage(helmet_sprite[1],srcX_helmet[1],0,helmet_w,helmet_h,helmet_pos_x[1],helmet_pos_y[1],helmet_w,helmet_h);
+  /*
+  Even though drawing is complete for body, we choose helmet image just in time to draw?
+  The burden on the program at the moment is that it must select which helmet iamge with the correct colour, and then the sprite with the relevant 'direction'.
+  Suitable pre-packaging of the information would have the program colourise 2 helmet images (one in each direction) and just choose which of these to use at draw time.
+  */
+  getBatterHelmet(1); //get batter helmet for batter 1
+  testhelmet=srcX_helmet[1];
+  for (i in testhelmet.values) {
+    testhelmet.
+  }
+  getBatterHelmet(2); //get batter helmet for batter 2
+  /*
+
+  canvas2D.drawImage is drawing a source image onto the canvas, selecting from a source file, or selecting a sub-part of a source file.
+
+  At present, there is one source file for the image: a sprite strip (with a series of sub-rectangles to choose from).
+  Choosing the batter head/helmet 'image' for the animation at any time in this animation currently consists of choosing one of the relevant heads and helmet colours.
+  This is a multiplied number e.g. 2 directions x 4 colours = 8 helmet images.
+  It would be more efficient to change helmet colours dynamically.
+
+  The drawImage method allows sub-rectangles of an image (e.g. a sprite strip panel) to be used for the draw process.
+  Instead of clipping/cutting the image and using an array, this method means selecting which part of the image to draw
+  from the original file at render time.  e.g. helmet_w and helmet_h are the sub-rectangle dimensions.
+  The starting x-coord for that sub-rectangle is stored in srcX_helmet[1] and srcX_helmet[2]
+
+  */
+  ctx.drawImage(helmet_sprite[1],testhelmet,0,helmet_w,helmet_h,helmet_pos_x[1],helmet_pos_y[1],helmet_w,helmet_h);
+  //ctx.drawImage(helmet_sprite[1],srcX_helmet[1],0,helmet_w,helmet_h,helmet_pos_x[1],helmet_pos_y[1],helmet_w,helmet_h);
   ctx.drawImage(helmet_sprite[2],srcX_helmet[2],0,helmet_w,helmet_h,helmet_pos_x[2],helmet_pos_y[2],helmet_w,helmet_h);
   //ctx.drawImage(bowler_sprite,bwl_srcX,bwl_srcY,sprite_w,sprite_h,550,bwl_sprite_y,sprite_w,sprite_h);
 

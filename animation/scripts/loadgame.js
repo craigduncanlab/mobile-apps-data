@@ -54,9 +54,9 @@ function mainLoader() {
 	submitbutton.addEventListener("click", function( event ){ 
 	event.preventDefault();
   selector.disabled=true;
-	console.log("Submit Button press, now data:");
+	//console.log("Submit Button press, now data:");
 	var text = reader.result
-	console.log(text); //check we have file result stored
+	//console.log(text); //check we have file result stored
 	//return false;
   //call function when submit is called
 	onLoadPress(text,submitbutton,resetbutton,demobutton);  //this is in this loadgame.js
@@ -70,7 +70,7 @@ function mainLoader() {
   selector.disabled=false;
   submitbutton.disabled=true;
   resetbutton.disabled=true;
-  demobutton.disabled=false;
+  demobutton.disabled=true;
   location.reload();
 
 
@@ -81,7 +81,7 @@ function mainLoader() {
   //
   demoPress();
   //reload and button states
-  selector.disabled=false;
+  selector.disabled=true;
   submitbutton.disabled=true;
   resetbutton.disabled=false;
   demobutton.disabled=true;
@@ -92,18 +92,34 @@ function mainLoader() {
 
 //function called when Demo press event is detected
 function demoPress() {
-  //load data
+  //
+  var xhttp = new XMLHttpRequest();
+  //define a function to process the contents of xhttp object when ready
+  xhttp.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+       // Typical action to be performed when the document is ready:
+       globaltext = xhttp.responseText; //this is global
+       postDemoLoad();
+  }
+  };
+  //load data using xhttp objects
   try {
-  let globaltext=fetch("matches/demogame.csv") //default is a GET of file.  Needs to be running on webserver
-  parseGameFile(globaltext)
-  setdefaultHelmets();
-  startAnimation();
+    xhttp.open("GET", "matches/demogame.csv", true); //true is async
+    xhttp.send();//sends the 'open' command to server
  }
  catch {
    console.log("Caught Demo fetch error.  Probably not running on server.")
    return;
  }
+  //TO DO: make these subject to an 'onload' type event for fetch.
+  //if it doesn't exist, put a single pixel loader into above, then move following into function:
+  //dummyImage.onLoad=postDemoLoad();
+}
 
+function postDemoLoad(){
+  parseGameFile(globaltext); //if not global, pass to this function
+  setdefaultHelmets();
+  startAnimation();
 }
 
 //post-loading function.  Here, does conversion of files
@@ -116,6 +132,7 @@ function onLoadPress(globaltext,submitbutton,resetbutton,demobutton) {
 		
 		submitbutton.disabled="disabled"; //disable further submits without reload
     resetbutton.disabled=false;  //changes focus to this button
+    demobutton.disabled=true;
     document.activeElement.blur(); //lose focus on disabled element - goes to body.
     // (this helps with keystroke detection before mouse click)
     parseGameFile(globaltext); //get the data ready
@@ -178,7 +195,7 @@ function CricSheetHelmets() {
       bat_teamname=thisBall[b][9];
       if (playernames.includes(nextname)==false) {
         playernames.push(nextname);
-        console.log("Player:",playernames[playernames.length-1]);
+        //console.log("Player:",playernames[playernames.length-1]);
         if (bat_teamname==bat_tm1) {
           defcolours.push(basecol1);
           flag=1;
@@ -187,7 +204,7 @@ function CricSheetHelmets() {
           defcolours.push(basecol2);
           flag=1;
         }
-        console.log("Colour:",defcolours[defcolours.length-1]);
+        //console.log("Colour:",defcolours[defcolours.length-1]);
       }
     }
 }
@@ -236,7 +253,7 @@ function parseGameFile(myText) {
 function checkFileType(){
   cricsh2="match_id,season,start_date,venue,innings,ball,batting_team,bowling_team,striker,non_striker,bowler,runs_off_bat,extras,wides,noballs,byes,legbyes,penalty,wicket_type,player_dismissed,other_wicket_type,other_player_dismissed"
   jcs="GameCode,GameName,GameDate,BallTime,Ball,BowlingTeamCode,BowlingTeam,BattingTeamCode,BattingTeam,BowlerID,BowlerCode,Bowler, StrikerID,StrikerCode,Striker,NonstrikerID,NonstrikerCode,Nonstriker,Runs,Wides,Wickets,Legbyes, Byes,Noballs,Runouts,whoRO,Bowled,Caught,c&b,ct(wk),Stumped,Hit-wkt,AssistID,AssistCode,AssistName"
-  console.log("Firstline:",firstlinedata);
+  //console.log("Firstline:",firstlinedata);
   if (firstlinedata==cricsh2) {
     return 1; //code for cricksheet
   }
@@ -271,11 +288,11 @@ columns=[14,17,11,18,20,19,22,21,23,8,6,2]; //2019 format (game as exported)
  //columns=[6,7,8,10,9,12,22,21,23]; //7.1.2019 raw format
 
    max=firstData.length;
-   console.log("length of array to filter:",max);
+   //console.log("length of array to filter:",max);
    for (var y=0;y<max;y++) {
       thisBall[y] = new Array();
       rowentry=firstData[y];
-      console.log(y,rowentry);
+      //console.log(y,rowentry);
     for (data=0;data<columns.length;data++) {
       oldcol=columns[data];
       //each array entry is a row of 'observations'
@@ -298,7 +315,7 @@ columns=[8,9,10,11,18,13,15,16,14,6,7,2,3];
 //2021format (these are index numbers starting at 0 for first column)
 
    max=firstData.length;
-   console.log("length of array to filter:",max);
+   //console.log("length of array to filter:",max);
    for (var y=0;y<max;y++) {
       thisBall[y] = new Array();
       rowentry=firstData[y];
