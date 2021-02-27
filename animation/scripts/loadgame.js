@@ -92,34 +92,37 @@ function mainLoader() {
 
 //function called when Demo press event is detected
 function demoPress() {
-  //
+  //We want to 'GET' a file (not XML in this case).  For client-server async, use this object:
   var xhttp = new XMLHttpRequest();
-  //define a function to process the contents of xhttp object when ready
+  //define a function to process the contents of xhttp object when ready, Check HTTP status
   xhttp.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 200) {
        // Typical action to be performed when the document is ready:
-       globaltext = xhttp.responseText; //this is global
+       globaltext = xhttp.responseText; //global var.  responseText deprec. just 'response'?
        postDemoLoad();
   }
   };
-  //load data using xhttp objects
+  //we set our required 'open' state in xhttp object for a 'GET' request
   try {
     xhttp.open("GET", "matches/demogame.csv", true); //true is async
-    xhttp.send();//sends the 'open' command to server
+    xhttp.send();//send the object with the 'open' command to server
  }
  catch {
    console.log("Caught Demo fetch error.  Probably not running on server.")
    return;
  }
-  //TO DO: make these subject to an 'onload' type event for fetch.
-  //if it doesn't exist, put a single pixel loader into above, then move following into function:
-  //dummyImage.onLoad=postDemoLoad();
 }
 
 function postDemoLoad(){
   parseGameFile(globaltext); //if not global, pass to this function
-  setdefaultHelmets();
-  startAnimation();
+  //may need to re-do each innings 
+  //setupSprites("Sydney Thunder","Perth Scorchers"); 
+  //startAnimation();
+  bat_tm1=thisBall[1][9];
+  bat_tm2=thisBall[1][10];
+  gamedate=thisBall[1][11];
+  stadium=thisBall[1][12];
+  startCanvas(); // and animation
 }
 
 //post-loading function.  Here, does conversion of files
@@ -136,78 +139,16 @@ function onLoadPress(globaltext,submitbutton,resetbutton,demobutton) {
     document.activeElement.blur(); //lose focus on disabled element - goes to body.
     // (this helps with keystroke detection before mouse click)
     parseGameFile(globaltext); //get the data ready
-    setdefaultHelmets();
-    startAnimation(); //this is in animator.js
+    bat_tm1=thisBall[1][9];
+    bat_tm2=thisBall[1][10];
+    gamedate=thisBall[1][11];
+    stadium=thisBall[1][12];
+    startCanvas();
+    //startAnimation(); //this is in animator.js
 	}
 }
 
-//function to set some default names and helmet colour sequences so that pairs have different colours
-//based on 4 colour array index values [0,3]
-function setdefaultHelmets() {
-  if (matchdatatype==0) {
-    JCShelmets();
-  }
-  if (matchdatatype==1){
-    CricSheetHelmets();
-  }
-}
 
-function JCShelmets() {
-  bat_tm1=thisBall[1][9];
-  bat_tm2=thisBall[1][10];
-  gamedate=thisBall[1][11];
-  stadium=thisBall[1][12];
-  basecol=0;
-  for (b=0;b<thisBall.length;b++) {
-    nextname=thisBall[b][0];
-    if (playernames.includes(nextname)==false) {
-        playernames.push(nextname);
-        defcolours.push(basecol%4);
-        basecol++;
-      }
-    }
-}
-
-function CricSheetHelmets() {
-  teams=["West Indies","Bangladesh","England","Australia","Sri Lanka","South Africa","New Zealand","India","Perth Scorchers","Brisbane Heat","Sydney Sixers"];
-  tcol=[1,0,2,3,0,3,1,2,1,2,2]; //these are the colours we have in helmet image file
-  bat_tm1=thisBall[1][9];
-  bat_tm2=thisBall[1][10];
-  gamedate=thisBall[1][11];
-  stadium=thisBall[1][12];
-  console.log("Team 1:",bat_tm1);
-  console.log("Team 2:",bat_tm2);
-  console.log("Stadium:",stadium);
-  basecol1=0;
-  basecol2=1;
-  for (t=0;t<teams.length;t++) {
-        if (teams[t]==bat_tm1) {
-          basecol1=tcol[t];
-        }
-        if (teams[t]==bat_tm2) {
-          basecol2=tcol[t];
-        }
-  }
-  //Goes through whole match data, for the abbreviated entries (thisBall DNE lines)
-  console.log("data entries:",thisBall.length);
-  for (b=0;b<thisBall.length;b++) {
-      nextname=thisBall[b][0];
-      bat_teamname=thisBall[b][9];
-      if (playernames.includes(nextname)==false) {
-        playernames.push(nextname);
-        //console.log("Player:",playernames[playernames.length-1]);
-        if (bat_teamname==bat_tm1) {
-          defcolours.push(basecol1);
-          flag=1;
-        }
-        if (bat_teamname==bat_tm2) {
-          defcolours.push(basecol2);
-          flag=1;
-        }
-        //console.log("Colour:",defcolours[defcolours.length-1]);
-      }
-    }
-}
 
 //convert CSV file to ball by ball array
 //Critical: check your line endings in CSV

@@ -4,7 +4,8 @@ Note: this file loads AFTER loadgame.js so any globals defined there persist for
 Includes thisBall, the array holding ball results.
 
 */
-
+//
+var masterflag=0;
 var numballs = 0;
   var elem = document.getElementById("txt");
   //var value = parseInt(elem.innerHTML, 10);
@@ -33,6 +34,7 @@ var numballs = 0;
   //canvas variables
   var batter_sprite = [];
   var helmet_sprite = [];
+  //width should be 700 as per html?
   var canvas, ctx,
     canv_width = 600,
     canv_height = 200,
@@ -248,9 +250,17 @@ function setBallResult() {
     allruns=parseInt(currentruns)+parseInt(byeruns)+parseInt(legbyeruns)+wr+nbr;
     }
 
-function startcanvas() {
+function startCanvas() {
+  document.addEventListener('keydown', keyDown);
+  document.addEventListener('keyup', keyUp, false);
   canvas = document.getElementById('canvas');
   ctx = canvas.getContext('2d');
+  setdefaultHelmets();
+  startImages();
+  startAnimation();
+}
+
+function startImages() {
   bgnd = new Image();
   batter_sprite[1] = new Image();
   batter_sprite[2] = new Image();
@@ -267,20 +277,283 @@ function startcanvas() {
   ctx.font = "10px Arial";
   bgnd.src = mf+'background5.png';
   ball_sprite.src=mf+'ballimg.png';
-  helmet_sprite[1].src = mf+'helmets.png';
-  helmet_sprite[2].src = mf+'helmets.png';
   umpire_sprite.src = mf+'umpire2.png';
+  bowlerhead.src=mf+'boyheads.png';
+  //colour options
+  
   batter_sprite[1].src = mf+'batter3.png';
   batter_sprite[2].src = mf+'batter3.png';
   bowler_sprite.src = mf+'bowler_run3.png';
-  bowlerhead.src=mf+'boyheads.png';
-  //for now, redrawing all of background with other sprites
-
+  helmet_sprite[1].src = mf+'helmets.png';
+  helmet_sprite[2].src = mf+'helmets.png';  
+  //setuniformcolour_bat(bat_tm1);
   //setInterval(loop, 1000/2); //delay was 1000/30 so 33 ms = 30 Hz
   }
 
 function clearCanvas() {
   ctx.clearRect(0,0,canv_width,canv_height);
+}
+
+//UNIFORMS
+/*
+function setupSprites2(batteam,bowlteam) {
+  //ctx2 = c.getContext("2d"); 
+  console.log("Setup sprites 2. Batteam, bowlteam:",batteam,bowlteam);
+  canvas.width=1700; //to allow for sprite maps size
+  //batter_sprite[1]=setuniformcolour(batteam);
+  setuniformcolour(batteam);
+  console.log(batter_sprite[1],batter_sprite[1].width,batter_sprite[1].height);
+  batter_sprite[2]=batter_sprite[1];
+  helmet_sprite[1]=setteamhelmetcolour(batteam);
+  helmet_sprite[2]=helmet_sprite[1];
+  bowler_sprite=setbowlercolour(bowlteam);
+  console.log("Finished setup");
+  //ctx2.clearRect(0,0,1700,200);
+  //use the canvas to draw image once at origin, change the colours, then get image data.
+  //Then in animation, don't use draw, use 'put'.
+  ctx.drawImage(batter_sprite[1],srcX[1],srcY[1],sprite_w,sprite_h,batter_sprite[1],sprite_y[1],sprite_w,sprite_h);
+  
+  canvas.width=700; //reset and will clear too
+
+  //TO DO: clear canvas
+}
+*/
+
+//return updated image data for batter sprites
+function setuniformcolour_bat(myteam) {
+  var uniformcolour = teamcolourRGB(myteam);
+  console.log("uniform colour:",uniformcolour);
+  var newBody=paintuniform(batter_sprite[1],uniformcolour);
+  return newBody;
+  //ctx.putImageData(newBody,0,0);
+}
+
+//return updated image data for batter helmet sprites
+function setteamhelmetcolour(myteam) {
+  //myimage = new Image();
+  //myimage.src = "media/onehelmet_strawberry_l.tiff"; //no loading required
+  var helmimage = new Image();
+  helmimage.src = "media/helmets.png"; 
+  var uniformcolour = teamcolourRGB(myteam);
+  var newHelmet=paintuniform(helmimage,uniformcolour);
+  return newHelmet;
+  //ctx.putImageData(newHelmet,0,0); 
+}
+
+//return updated image data for bowler sprites
+function setbowlercolour(myteam) {
+  var bowlerBody = new Image();
+  bowlerBody.src="media/bowler_run3.png";
+  var uniformcolour = teamcolourRGB(myteam);
+  var newBowler=paintuniform(bowlerBody,uniformcolour);
+  return newBowler;
+  //ctx.putImageData(newBowler,0,0);
+}
+
+//function to return an RGB array for chosen colour in suite
+function teamcolourRGB(myteam){
+  var white=[255,255,255];
+  var green=[0,255,102]; // define array values as set.  Green screen.
+  var pink=[255,127,169];
+  var teal=[0,211,213]; 
+  var black=[0,0,0];
+  var ltgreen=[114,250,120];
+  var orange=[255,155,0];
+  var darkblue=[0,72,169];
+  var heatcol=[0,190,194]; //teal
+  var lightblue=[117,213,255];
+  var darkgreen=[60,165,0];
+  var windiesred=[171,21,0];
+  var gadesred=[215,53,6];
+  var black=[0,0,0];
+  var sixerspink=[253,87,127]; //sixerspink
+  var purple = [145,83,222];
+  var banggreen=[7,192,132];
+  var pocskin=[137,96,84]; //windies skin
+  var ltskin=[255,204,153]; //default skin white
+  var coloursuite=[darkgreen,banggreen,darkgreen,darkgreen,darkblue,black,windiesred,lightblue,ltgreen,darkgreen,orange,sixerspink,heatcol,gadesred,purple,lightblue];
+  var teams=["Pakistan","Bangladesh","South Africa","Australia","England","New Zealand","West Indies","India","Sydney Thunder","Melbourne Stars","Perth Scorchers","Sydney Sixers","Brisbane Heat","Melbourne Renegades","Hobart Hurricanes","Adelaide Strikers"];
+  var flip=white;
+  //match colour to team name
+  for (i=0;i<coloursuite.length;i++){
+    if (teams[i]==myteam) {
+      flip=coloursuite[i];
+    }
+  }
+  return flip;
+}
+
+//choose appropriate skin tones
+function teamskintone(myteam){
+  var poc=[137,96,84]; //windies skin
+  var lt=[255,204,153]; //default skin white
+  var coloursuite=[poc,poc,poc,lt,lt,lt,poc,poc,lt,lt,lt,lt,lt,lt,lt,lt,lt]; 
+  var teams=["Pakistan","Bangladesh","South Africa","Australia","England","New Zealand","West Indies","India","Sydney Thunder","Melbourne Stars","Perth Scorchers","Sydney Sixers","Brisbane Heat","Melbourne Renegades","Hobart Hurricanes","Adelaide Strikers"];
+  var flip=lt;
+  //match colour to team name
+  for (i=0;i<coloursuite.length;i++){
+    if (teams[i]==myteam) {
+      flip=coloursuite[i];
+    }
+  }
+  return flip;
+}
+
+//function to flip pixels that are white screen colour and transform to selected RGB
+//if the canvas is not big enough it will not 'drawImage'
+function paintuniform(img,mycolour) {
+  //var c = document.getElementById("canvas"); // must be an html element <canvas id ="canvas"> inside <body>
+  var flip=mycolour;
+  console.log("img is ...",img);
+  canvas.width=2000; //expand - does this clear canvas?
+  ctx = canvas.getContext('2d');
+  console.log("paintuniform...");
+  // are we copying an already loaded image or drawing it fresh?
+    if (img instanceof HTMLCanvasElement) {
+        var canvasData = img.getContext('2d').getImageData(0, 0, img.width, img.height);
+        ctx.putImageData(canvasData, 0, 0);
+         console.log("image already defined by html");
+    }
+    else {
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        console.log("Drew new image width, height", img.width,img.height);
+    }
+    //check there is an image to get from canvas
+    var imgData = ctx.getImageData(0, 0, img.width, img.height);
+    var i;
+    //tolerance for 'white' is 244-255
+  for (i = 0; i < imgData.data.length; i += 4) {
+      if (imgData.data[i]>=244 && imgData.data[i+1]>=244 && imgData.data[i+2]>=244 ) {
+        imgData.data[i] = flip[0];
+        imgData.data[i + 1] = flip[1];
+        imgData.data[i + 2] = flip[2];
+        imgData.data[i + 3] = 255; //alpha channel 255-0 = 255
+    }
+  }
+  //ctx.clearRect(0,0,c.width, c.height); //if canvas is not 'refreshed' by page updates you may get cross-origin errors when posting images to same area
+  ctx.putImageData(imgData,0,0); 
+  canvas.width=700;
+  return imgData;
+  //ctx.putImageData(imgData,0,0); 
+}
+
+//uses an in-memory canvas to draw and preserve transparency
+//replaces white with chosen team colour
+//replaces skin tone with chosen team colour
+function paint_the_white(myteam,img,sx,sy,w,h) {
+  var inMemoryCanvas = document.createElement('canvas');
+  var context=inMemoryCanvas.getContext('2d');
+  context.drawImage(img,sx,sy,w,h,0,0,w,h); //draw correct 'subrectangle' at 0,0 on this canvas
+  var flipwhite = teamcolourRGB(myteam);
+  var flipskin=teamskintone(myteam);
+  var defskin=[255,204,153];
+  var pochair=[15,15,17];
+  var lthair=[127,110,82];
+  var hairdef=[255,243,182];
+  var haircol;
+  if (flipskin[1]==204) {
+      haircol=pochair;
+  }
+  else {
+    haircol=lthair;
+  }
+  var pochair=[15,15,17];
+    //always drawn at origin so use 0,0
+    //read from canvas, using the width data given (or use image)
+
+    var imgData = context.getImageData(0,0,w,h);
+      var i;
+    //tolerance for 'white' is 244-255
+  for (i = 0; i < imgData.data.length; i += 4) {
+      if (imgData.data[i]>=244 && imgData.data[i+1]>=244 && imgData.data[i+2]>=244 ) {
+        imgData.data[i] = flipwhite[0];
+        imgData.data[i + 1] = flipwhite[1];
+        imgData.data[i + 2] = flipwhite[2];
+        imgData.data[i + 3] = 255; //alpha channel 255-0 = 255
+    }
+    //skintones var poc=[137,96,84]; //windies skin. var lt=[255,204,153];
+    if (flipskin[2]<100 && imgData.data[i]>=defskin[0]-5 && imgData.data[i+1]>=defskin[1]-5 && imgData.data[i+1]<=defskin[1]+5 && imgData.data[i+2]>=defskin[2]-5 && imgData.data[i+2]<=defskin[2]+5) {
+        imgData.data[i] = flipskin[0];
+        imgData.data[i + 1] = flipskin[1];
+        imgData.data[i + 2] = flipskin[2];
+        imgData.data[i + 3] = 255; //alpha 
+
+    }
+    //chainge hair if needed
+    if (flipskin[2]<100 && imgData.data[i]<=hairdef[0] && imgData.data[i+1]==hairdef[1] && imgData.data[i+2]==hairdef[2]) {
+        imgData.data[i] = pochair[0];
+        imgData.data[i + 1] = pochair[1];
+        imgData.data[i + 2] = pochair[2];
+        imgData.data[i + 3] = 255; //alpha 
+
+    }
+  }
+  //ctx.clearRect(0,0,c.width, c.height); //if canvas is not 'refreshed' by page updates you may get cross-origin errors when posting images to same area
+  context.putImageData(imgData,0,0);  //or do draw?
+  //canvas.width=700;
+  return inMemoryCanvas;//imgData;
+  //ctx.putImageData(imgData,0,0); 
+}
+
+//function to set some default names and helmet colour sequences so that pairs have different colours
+//based on 4 colour array index values [0,3]
+function setdefaultHelmets() {
+  if (matchdatatype==0) {
+    JCShelmets();
+  }
+  if (matchdatatype==1){
+    CricSheetHelmets();
+    //setupSprites2(bat_tm1,bat_tm2); 
+  }
+}
+
+function JCShelmets() {
+  basecol=0;
+  for (b=0;b<thisBall.length;b++) {
+    nextname=thisBall[b][0];
+    if (playernames.includes(nextname)==false) {
+        playernames.push(nextname);
+        defcolours.push(basecol%4);
+        basecol++;
+      }
+    }
+}
+
+function CricSheetHelmets() {
+  teams=["West Indies","Bangladesh","England","Australia","Sri Lanka","South Africa","New Zealand","India","Perth Scorchers","Brisbane Heat","Sydney Sixers"];
+  tcol=[1,0,2,3,0,3,1,2,1,2,2]; //these are the colours we have in helmet image file
+  console.log("Team 1:",bat_tm1);
+  console.log("Team 2:",bat_tm2);
+  console.log("Stadium:",stadium);
+  basecol1=0;
+  basecol2=1;
+  for (t=0;t<teams.length;t++) {
+        if (teams[t]==bat_tm1) {
+          basecol1=tcol[t];
+        }
+        if (teams[t]==bat_tm2) {
+          basecol2=tcol[t];
+        }
+  }
+  //Goes through whole match data, for the abbreviated entries (thisBall DNE lines)
+  console.log("data entries:",thisBall.length);
+  for (b=0;b<thisBall.length;b++) {
+      nextname=thisBall[b][0];
+      bat_teamname=thisBall[b][9];
+      if (playernames.includes(nextname)==false) {
+        playernames.push(nextname);
+        //console.log("Player:",playernames[playernames.length-1]);
+        if (bat_teamname==bat_tm1) {
+          defcolours.push(basecol1);
+          flag=1;
+        }
+        if (bat_teamname==bat_tm2) {
+          defcolours.push(basecol2);
+          flag=1;
+        }
+        //console.log("Colour:",defcolours[defcolours.length-1]);
+      }
+    }
 }
 
 //ANIMATION LOOP FUNCTIONS
@@ -483,6 +756,7 @@ function getBowlerHead() {
 //So they can be looked up, not recalculated every frame
 //
 //input batter is '1' or '2' depending on batter of interest
+//set this to the first helmet (the 'white' helmet by default);
 function getBatterHelmet(batter) {
   if (batterhead_mode[batter]==="left") {
     srcX_helmet[batter]=bat_helm_lt[batter];
@@ -511,6 +785,7 @@ function setBatterHelmet(batnum) {
       }
     }
   //set f to the index of the helmet colour required (from array)
+  f=0; //set it to 0 in all cases
   bat_helm_lt[batnum]=headsleft[f];
   bat_helm_rt[batnum]=headsright[f];
   bat_helm_col[batnum]=helmcols[f];
@@ -1031,18 +1306,18 @@ function moveBall_xpos(bouncex) {
 //So reset it after you have done it for an element
 
 function drawSprite() {
+  //obtain an in-memory canvas with the colour replacements completed
+  var imgMod1=paint_the_white(bat_tm1,batter_sprite[1],srcX[1],srcY[1],sprite_w,sprite_h); //just pass the rectangle width
+  var imgMod2=paint_the_white(bat_tm1,batter_sprite[2],srcX[2],srcY[2],sprite_w,sprite_h);
+  var bowlerMod=paint_the_white(bat_tm2,bowler_sprite,bwl_srcX,bwl_srcY,sprite_w,sprite_h);
+  //get helmets, then modify
+  getBatterHelmet(1); //get batter helmet for batter 1.  
+  getBatterHelmet(2); //get batter helmet for batter 2
+  var helmetMod1=paint_the_white(bat_tm1,helmet_sprite[1],srcX_helmet[1],0,helmet_w,helmet_h); //just pass the rectangle width
+  var helmetMod2=paint_the_white(bat_tm1,helmet_sprite[2],srcX_helmet[2],0,helmet_w,helmet_h); //just pass the rectangle width
+  
+  //Proceed with drawing
   ctx.drawImage(bgnd,0,0); //offset.  no scaling yet.
-
-  /* In this section, choosing which sprite to use from a particular sprite graphic strip is a general function.
-  We could generalise this to make it clear this is a mechanical procedure repeated for each sprite.
-
-  The alternative is to find that image data separately, and pass that to the simplest drawImage function:
-  ctx.drawImage(image, dx, dy); when simply specifying an image you don't need its scaled width/height.
-  In the current code dx and dy are represented by _sprite_x and _sprite_y terms, and the width and height are sprite_w,sprite_h
-  i.e. how efficient is drawImage?
-
-  It only needs to be done if there is a change in the state, but this isn't considered here
-  */
   
   //UMPIRE
   ctx.drawImage(umpire_sprite,ump_srcX,ump_srcY,sprite_w,sprite_h,ump_sprite_x,ump_sprite_y,sprite_w,sprite_h);
@@ -1055,11 +1330,13 @@ function drawSprite() {
   }
   
   //BOWLER BODY & HEAD
-  ctx.drawImage(bowler_sprite,bwl_srcX,bwl_srcY,sprite_w,sprite_h,bwl_sprite_x,bwl_sprite_y,sprite_w,sprite_h);
-  
+  //ctx.drawImage(bowler_sprite,bwl_srcX,bwl_srcY,sprite_w,sprite_h,bwl_sprite_x,bwl_sprite_y,sprite_w,sprite_h);  
+  ctx.drawImage(bowlerMod,0,0,sprite_w,sprite_h,bwl_sprite_x,bwl_sprite_y,sprite_w,sprite_h);  
   //BATTERS & HELMET
-  ctx.drawImage(batter_sprite[1],srcX[1],srcY[1],sprite_w,sprite_h,batter_sprite_x[1],sprite_y[1],sprite_w,sprite_h);
-  ctx.drawImage(batter_sprite[2],srcX[2],srcY[2],sprite_w,sprite_h,batter_sprite_x[2],sprite_y[2],sprite_w,sprite_h);
+  //ctx.drawImage(batter_sprite[1],srcX[1],srcY[1],sprite_w,sprite_h,batter_sprite_x[1],sprite_y[1],sprite_w,sprite_h);
+  ctx.drawImage(imgMod1,0,0,sprite_w,sprite_h,batter_sprite_x[1],sprite_y[1],sprite_w,sprite_h);
+  //ctx.drawImage(batter_sprite[2],srcX[2],srcY[2],sprite_w,sprite_h,batter_sprite_x[2],sprite_y[2],sprite_w,sprite_h);
+  ctx.drawImage(imgMod2,0,0,sprite_w,sprite_h,batter_sprite_x[2],sprite_y[2],sprite_w,sprite_h);
   //srcX_helmet value (left or right).  TO DO: set when mode changes?
   //non-striker (no ducking etc)
   var helmet_pos_x=[]
@@ -1079,33 +1356,12 @@ function drawSprite() {
   if (batter_mode[1]==="block") {
        helmet_pos_x[1]=helmet_pos_x[1]+5;
   }
-  /*
-  Even though drawing is complete for body, we choose helmet image just in time to draw?
-  The burden on the program at the moment is that it must select which helmet iamge with the correct colour, and then the sprite with the relevant 'direction'.
-  Suitable pre-packaging of the information would have the program colourise 2 helmet images (one in each direction) and just choose which of these to use at draw time.
-  */
-  getBatterHelmet(1); //get batter helmet for batter 1.  
-  //This doesn't change the source file;  
-  //It changes the sub-rectangle reference to helmet colour to be used in the drawImage() method.
-  getBatterHelmet(2); //get batter helmet for batter 2
-  /*
-
-  canvas2D.drawImage is drawing a source image onto the canvas, selecting from a source file, or selecting a sub-part of a source file.
-
-  At present, there is one source file for the image: a sprite strip (with a series of sub-rectangles to choose from).
-  Choosing the batter head/helmet 'image' for the animation at any time in this animation currently consists of choosing one of the relevant heads and helmet colours.
-  This is a multiplied number e.g. 2 directions x 4 colours = 8 helmet images.
-  It would be more efficient to change helmet colours dynamically.
-
-  The drawImage method allows sub-rectangles of an image (e.g. a sprite strip panel) to be used for the draw process.
-  Instead of clipping/cutting the image and using an array, this method means selecting which part of the image to draw
-  from the original file at render time.  e.g. helmet_w and helmet_h are the sub-rectangle dimensions.
-  The starting x-coord for that sub-rectangle is stored in srcX_helmet[1] and srcX_helmet[2]
-
-  */
-  ctx.drawImage(helmet_sprite[1],testhelmet,0,helmet_w,helmet_h,helmet_pos_x[1],helmet_pos_y[1],helmet_w,helmet_h);
+  
   //ctx.drawImage(helmet_sprite[1],srcX_helmet[1],0,helmet_w,helmet_h,helmet_pos_x[1],helmet_pos_y[1],helmet_w,helmet_h);
-  ctx.drawImage(helmet_sprite[2],srcX_helmet[2],0,helmet_w,helmet_h,helmet_pos_x[2],helmet_pos_y[2],helmet_w,helmet_h);
+  ctx.drawImage(helmetMod1,0,0,helmet_w,helmet_h,helmet_pos_x[1],helmet_pos_y[1],helmet_w,helmet_h);
+  ctx.drawImage(helmetMod2,0,0,helmet_w,helmet_h,helmet_pos_x[2],helmet_pos_y[2],helmet_w,helmet_h);
+  //ctx.drawImage(helmet_sprite[1],srcX_helmet[1],0,helmet_w,helmet_h,helmet_pos_x[1],helmet_pos_y[1],helmet_w,helmet_h);
+  //ctx.drawImage(helmet_sprite[2],srcX_helmet[2],0,helmet_w,helmet_h,helmet_pos_x[2],helmet_pos_y[2],helmet_w,helmet_h);
   //ctx.drawImage(bowler_sprite,bwl_srcX,bwl_srcY,sprite_w,sprite_h,550,bwl_sprite_y,sprite_w,sprite_h);
 
   //PLAYER NAMES TEXT
@@ -1246,9 +1502,6 @@ function keyDown(e) {
 //var match = new Results();
 function startAnimation() {
   //if listener is set to 'false' it is bubbling 'up' to highest node.  true it is down (capture)
-  document.addEventListener('keydown', keyDown);
-  document.addEventListener('keyup', keyUp, false);
-  startcanvas();  
   console.log(gameArray[2]); //test we have array 
   intvl1=setInterval(nextBall, 1000);  // cf requestAnimationFrame() 
   intvl2=setInterval(doBatter, 80); //make this character specific, not event
