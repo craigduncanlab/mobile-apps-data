@@ -368,11 +368,12 @@ function teamcolourRGB(myteam){
   var black=[0,0,0];
   var sixerspink=[253,87,127]; //sixerspink
   var purple = [145,83,222];
+  var lankablue=[0,120,212]; //sri lanka blue
   var banggreen=[7,192,132];
   var pocskin=[137,96,84]; //windies skin
   var ltskin=[255,204,153]; //default skin white
-  var coloursuite=[darkgreen,banggreen,darkgreen,darkgreen,darkblue,black,windiesred,lightblue,ltgreen,darkgreen,orange,sixerspink,heatcol,gadesred,purple,lightblue];
-  var teams=["Pakistan","Bangladesh","South Africa","Australia","England","New Zealand","West Indies","India","Sydney Thunder","Melbourne Stars","Perth Scorchers","Sydney Sixers","Brisbane Heat","Melbourne Renegades","Hobart Hurricanes","Adelaide Strikers"];
+  var coloursuite=[darkgreen,banggreen,darkgreen,darkgreen,darkblue,black,windiesred,lankablue,lightblue,ltgreen,darkgreen,orange,sixerspink,heatcol,gadesred,purple,lightblue];
+  var teams=["Pakistan","Bangladesh","South Africa","Australia","England","New Zealand","West Indies","Sri Lanka","India","Sydney Thunder","Melbourne Stars","Perth Scorchers","Sydney Sixers","Brisbane Heat","Melbourne Renegades","Hobart Hurricanes","Adelaide Strikers"];
   var flip=white;
   //match colour to team name
   for (i=0;i<coloursuite.length;i++){
@@ -387,8 +388,8 @@ function teamcolourRGB(myteam){
 function teamskintone(myteam){
   var poc=[137,96,84]; //windies skin
   var lt=[255,204,153]; //default skin white
-  var coloursuite=[poc,poc,poc,lt,lt,lt,poc,poc,lt,lt,lt,lt,lt,lt,lt,lt,lt]; 
-  var teams=["Pakistan","Bangladesh","South Africa","Australia","England","New Zealand","West Indies","India","Sydney Thunder","Melbourne Stars","Perth Scorchers","Sydney Sixers","Brisbane Heat","Melbourne Renegades","Hobart Hurricanes","Adelaide Strikers"];
+  var coloursuite=[poc,poc,poc,lt,lt,lt,poc,poc,poc,lt,lt,lt,lt,lt,lt,lt,lt,lt]; 
+  var teams=["Pakistan","Bangladesh","South Africa","Australia","England","New Zealand","West Indies","Sri Lanka","India","Sydney Thunder","Melbourne Stars","Perth Scorchers","Sydney Sixers","Brisbane Heat","Melbourne Renegades","Hobart Hurricanes","Adelaide Strikers"];
   var flip=lt;
   //match colour to team name
   for (i=0;i<coloursuite.length;i++){
