@@ -1,4 +1,5 @@
 /* Match Animator (c) 2019-21 Craig Duncan
+// Last updated: 21 March 2021
 
 Note: this file loads AFTER loadgame.js so any globals defined there persist for this file.
 Includes thisBall, the array holding ball results.
@@ -1107,9 +1108,9 @@ function doBatterPlayShot() {
         }
       }
 
-    //BOUNDARY
+    //BOUNDARY (4 or 6)
     
-    if (currentruns==4) {
+    if (currentruns>=4) {
         batter_goal="achieved";
         batter_mode[1]="drive"; //or hit
         ball_hit.play();
@@ -1225,8 +1226,12 @@ function doBall() {
     }   
 
    //MOVEMENT BASED ON GOALS
-   if (ball_goal==="boundary") {
+   if (ball_goal==="boundary" && currentruns<6) {
        moveBall_shots();
+   }
+
+   if (ball_goal==="boundary" && currentruns==6) {
+       moveBall_six();
    }
 
    if (ball_goal==="delivery") {
@@ -1240,6 +1245,9 @@ function doBall() {
      var keeper_x=0; //crease1-20;
     //outer limit for ball movement - depends on runs
      var outerlimit =crease2+(60*currentruns);
+     if (currentruns>=4) {
+      outerlimit=699;
+     }
 
     //if not boundary - limit is keeper
     if (ball_sprite_x>=outerlimit && ball_goal=="boundary") {
@@ -1268,6 +1276,19 @@ function moveBall_shots() {
     range=60;
     bobble = 0+Math.floor((Math.random() * 3) + 1); 
     ball_sprite_y= base_ball_y+range-bobble; //was 130;
+    step=8;
+    ball_sprite_x+=step;
+    }
+
+//ball hit in air over boundary
+function moveBall_six() {
+    groundlevel=base_ball_y+55;
+    gradient=135.000/82944.000; //to give an x^2 curve in our x,y range of (288,135)
+    xoff=368; //to shift the flat part of the parabola, near crease2
+    ball_sprite_y=gradient*Math.pow(ball_sprite_x-xoff, 2)+10; //function for position
+    if (ball_sprite_x>crease2 && ball_sprite_y>groundlevel){
+      ball_sprite_y=groundlevel;
+    }
     step=8;
     ball_sprite_x+=step;
     }
