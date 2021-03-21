@@ -1,0 +1,92 @@
+<!---loadgame.html -->
+<!-- 14 August 2019. Update to new file format -->
+<!-- (c) 2019, 2020 Craig Duncan -->
+<!-- Subject to Open Data License -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Junior Cricket Match Results Explorer</title>
+
+</head>
+<style>
+body {
+  margin:0;
+  padding:0;
+}
+canvas {
+  display:block;
+  margin:20px auto 0;
+  border:1px dashed #ccc;
+}
+
+table {
+	border: 0px;
+	}
+	.score {
+		border: 1px solid black;
+	}
+
+td {
+	border: 0px;
+	}
+	
+p {
+    color: black;
+  }
+  .title {
+    font-size: 18px;
+  }
+  .inst {
+    font-size: 10px;
+  }
+  .instb {
+  	font-weight: bold;
+    font-size: 10px;
+  }
+</style>
+
+<body>
+<div align="center"><p>Junior Cricket Scorer Match Explorer</p>
+<p><br></p>
+</div>
+
+<!-- Load file from local (client) side -->
+<div align="center">
+	<p>Select file to load:<input type="file" id="fileInput"></p>
+</div>
+<div align="center">
+<label><button type="submit" id="submitButton" disabled="true">Load</button></label>
+<label><button type="submit" id="resetButton" disabled="true">Reset</button></label></div>
+<div class="graphic" align="center">
+	<table>
+	<td class="score"><p class="instb">Keys for control:</p>
+	<p></p>
+	<p class="inst">Left/right arrow: back/fwd 1 ball</p>
+	<p class="inst">Up/down arrows: back/fwd 6 balls (1 over)</p>
+	<p></p>
+	<p class="inst">"d" = 'duck'</p>
+	<p class="inst">"." = 'bat up'</p>
+	<p class="inst">"," = 'high bat'</p></td>
+<td class="score">
+<!-- Canvas base = 170 + space for text is 60 -->
+<canvas id="canvas" width="700" height="230"></canvas></div></td></tr>
+</table>
+</div>
+</table>
+</div>
+<div class="instructions" align="centre">
+	
+</div>
+<!-- If script refers to values in HTML tags, put script here, after tags-->
+
+<script src="scripts/loadgame.js"></script>
+<script src="scripts/animator.js"></script>
+
+<!--
+<script src="livescore.js"></script> 
+<script src="innings.js"></script>
+<script src="chardata.js"></script>
+-->
+</body>
+</html>
