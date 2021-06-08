@@ -3,14 +3,17 @@
 
 (c) Craig Duncan 2020-2021
 
-# Cartoon Animation 
-=======
-# Cricket Data and Open Data Pipeline
-for Junior Cricket Scorer App
-(c) Craig Duncan 2020.   
 Download and use of the software referred to here is under the terms of my [RepositoryLicence](../RepositoryLicense.md).
 
-# Junior Cricket Scorer provides match data
+# Cartoon Cricket Animation 
+
+Update (June 2021)
+
+I've made the Junior Cricket animator available at my web page: [CartoonCricket](http://craigduncan.com.au/cartooncricket.html)
+
+You can load in your data there, and even obtain match data for other matches to use with it.
+
+## Match Data obtained from Junior Cricket Scorer 
 
 The Junior Cricket Scorer app has been designed so that you can email match data to yourself or your team.
 
@@ -25,17 +28,9 @@ The cricket app (Junior Cricket Scorer) can send data files (.csv format) by ema
 
 NB: It does not work with the raw 'balldata' files (like '3219_H_balldata.csv').
 
-# Data processing (statistics)
+# Match Animator (Superseded local version)
 
- The raw data files used for the app can be very useful for further processing.   For example:
-
-- I wrote a [program in R](worm2(2018).r) that will take the match scores and use it for visualisation of progressive score (like a 'worm' graph).
-- I wrote another program in R that will compile all of the player statistics from the year's results.
- 
-=======
-# Post-game data - Match Animator 
-
-The main programs and folders that need to be installed on your local PC are:
+The main programs and folders that needed to be installed on your local PC were:
 
 - loadgame.html
 - media folder (containing image and sound files)
@@ -54,12 +49,4 @@ These will have filenames like :
  - '3219_homeinn.csv' or
  - '3219_awayinn.csv'
 
-NB: It does not work with the raw 'balldata' files (like '3219_H_balldata.csv').
-
-# Post-game data processing (statistics)
-
-The raw data files used for the app can also be very useful for further statistical processing.   see [stats](../stats)
- 
-
-
-
+NB: Animation will not work with the raw 'balldata' files (like '3219_H_balldata.csv').
